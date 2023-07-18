@@ -27,7 +27,7 @@ const useOrderService = () => {
 
     const productBarcodeYandex = async (barcode) => {  
        if(barcode.length <= 10){
-        const res = await request(`http://10.0.0.4:3004/yandex-barcode/${barcode}`, 'GET', null); 
+        const res = await request(`${_url}/yandex-barcode/${barcode}`, 'GET', null); 
         return res.order
        }
     }

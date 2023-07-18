@@ -2,8 +2,8 @@ import {useHttp} from '../hooks/http.hook';
 
 const useOrderService = () => {
     const {loading, request, error, clearError} = useHttp();
-<<<<<<< HEAD
 
+    const _url = process.env.REACT_APP_SERVER_URL
    const headersDef = {  
         'Client-Id': '' ,
         'Api-Key': ''
@@ -31,21 +31,10 @@ const useOrderService = () => {
         return res.order
        }
     }
-=======
- 
 
-    const getAllOrders = async (formData, headersOzon) => {
-  
-        const res = await request(`https://api-seller.ozon.ru/v3/posting/fbs/unfulfilled/list`, 'POST', formData, headersOzon);
-            console.log(res)
-        return res.result.postings.map(transformProduct)
-    }
 
-    const getAllProducts = async () => {
-        const res = await request(`https://server-market-arsenal.vercel.app/products-for-orders`, 'GET');
-     
-        return res;
-    }
+
+
 
     const getLabelOzon = async (url, method, body, headersOzon) => {
         const res = await request(url, method, body, headersOzon);
@@ -54,21 +43,26 @@ const useOrderService = () => {
 
  
 
-    const getInfoProducts = async (article) => {
+    // const getInfoProducts = async (article) => {
 
-        const res = article.map(async (item) => {
+    //     const res = article.map(async (item) => {
            
-          const res = await request(`https://server-market-arsenal.vercel.app/products-for-orders?article=${item.productArt}`, 'GET');
+    //       const res = await request(`https://server-market-arsenal.vercel.app/products-for-orders?article=${item.productArt}`, 'GET');
       
-          res.postingNumber = item.postingNumber;
-          res.date = item.date;
-          res.price = item.productPrice
-          res.warehouse = item.warehouse
-          res.quantity = item.quantity
-          return res;  
-        })
-        return res 
->>>>>>> 17484926198a6b3bed63c3d407cc01e9bb5ecbad
+    //       res.postingNumber = item.postingNumber;
+    //       res.date = item.date;
+    //       res.price = item.productPrice
+    //       res.warehouse = item.warehouse
+    //       res.quantity = item.quantity
+    //       return res;  
+    //     })
+    // }
+
+    const getInfoProducts = async () => {
+
+        const res = await request(`${_url}/products-for-orders`, 'GET')
+        return res
+    }
 
     const getWerehouse = async (formData, headersOzon = headersDef) => { 
         const res = await request(`https://api-seller.ozon.ru/v3/posting/fbs/get`, 'POST', formData, headersOzon);
@@ -81,38 +75,17 @@ const useOrderService = () => {
         const res = await request(url, method,  body, headersOzon,);
     }
 
-    const getBaskets = async (product = 'baskets') => {
-        const res = await request(`http://localhost:3002/${product}`, 'GET');
-        return res 
-       
-    }
-
-    const transformBaskets = (baskets) => {
-         
-        return{
-            art: baskets.articles,
-            sku: baskets.sku_id
-        } 
-     } 
-    
- 
-<<<<<<< HEAD
-
  
 
-    const getInfoProducts = async () => {
-          const res = await request(`http://10.0.0.4:3004/products-for-orders`, 'GET');
-        return res 
-    }
+
+
 
     const getPhotoProducts = async () => {
-        const res = await request(`http://10.0.0.4:3004/allproducts`, 'GET');
+        const res = await request(`${_url}/allproducts`, 'GET');
       return res 
   }
 
-    const updateData = async (url,method, body) => {
-        const res = await request(url, method, body);
-    }
+   
 
  
 
@@ -125,8 +98,7 @@ const useOrderService = () => {
      } 
     
  
-=======
->>>>>>> 17484926198a6b3bed63c3d407cc01e9bb5ecbad
+
     const transformProduct = (product) => {
         
         return{
@@ -142,12 +114,8 @@ const useOrderService = () => {
      }
 
 
-
-<<<<<<< HEAD
     return {loading, error, clearError, getAllOrders, getInfoProducts, updateData, productBarcode, getPhotoProducts, getWerehouse, productBarcodeYandex}
-=======
-    return {loading, error, clearError, getAllOrders, getInfoProducts, getBaskets , getAllProducts, updateData, getLabelOzon}
->>>>>>> 17484926198a6b3bed63c3d407cc01e9bb5ecbad
+
 }
 
-export default useOrderService;
+export default useOrderService

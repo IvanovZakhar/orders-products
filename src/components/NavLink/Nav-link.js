@@ -108,14 +108,14 @@ const NavLink = ( {onLoadingProducts, getLabels, labels, setName} ) => {
                   <Form.Control type="number" placeholder="Client-Id" />
 
                 </Form.Group>
-<<<<<<< HEAD
+ 
                  
                   <Button variant="primary"  
                     onClick={() => onLoadingProducts()}
                     type="submit"
                   >
                    Ок
-=======
+                   </Button>
                     <Form.Control type="text" placeholder="Api-key" />
                   </Form.Group>
 
@@ -123,7 +123,7 @@ const NavLink = ( {onLoadingProducts, getLabels, labels, setName} ) => {
                     console.log(e)
                     onLoadingProducts()}} type='submit'>
                     Submit
->>>>>>> 17484926198a6b3bed63c3d407cc01e9bb5ecbad
+ 
                   </Button>
               </Form>
               

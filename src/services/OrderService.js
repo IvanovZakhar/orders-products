@@ -3,12 +3,12 @@ import {useHttp} from '../hooks/http.hook';
 const useOrderService = () => {
     const {loading, request, error, clearError} = useHttp();
 
-    const _url = process.env.REACT_APP_SERVER_URL
+    const _url = "https://f9fd09879062.vps.myjino.ru:49256"
    const headersDef = {  
         'Client-Id': '' ,
         'Api-Key': ''
      }
-
+     console.log(_url)
   
 
 

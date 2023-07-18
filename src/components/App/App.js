@@ -25,28 +25,27 @@ function App() {
 
   // Далее можно использовать эти переменные в коде
   const arsenal = {
-    'Client-Id': arsenalClientId,
-    'Api-Key': arsenalApiKey
+    'Client-Id': JSON.parse(localStorage.apiData)[0].clientId,
+    'Api-Key': JSON.parse(localStorage.apiData)[0].apiKey
   };
 
   const cma = {
-    'Client-Id': cmaClientId,
-    'Api-Key': cmaApiKey
+    'Client-Id': JSON.parse(localStorage.apiData)[1].clientId,
+    'Api-Key': JSON.parse(localStorage.apiData)[1].apiKey
   }; 
- 
+  console.log(cma)
   // Устанавливаем продукты для нарядов с базы
   useEffect(() => {
     getInfoProducts().then(setAllProducts) 
     getPhotoProducts().then(setPhotoProducts)
   }, [])
-
-console.log(allProducts)
+ 
 
   useEffect(() => {
     onLoadingProducts();
   }, [localStorage.data]);
  
-
+  console.log(allProducts)
   const onLoadingProducts = (data = localStorage.data) => {
     const formData = JSON.stringify({
       dir: 'ASC',
@@ -163,7 +162,7 @@ console.log(allProducts)
       })}
     ))
   };
-
+  console.log(product)
   return (
     <BrowserRouter>
       <Routes>

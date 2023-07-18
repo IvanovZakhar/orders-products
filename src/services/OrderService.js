@@ -2,55 +2,72 @@ import {useHttp} from '../hooks/http.hook';
 
 const useOrderService = () => {
     const {loading, request, error, clearError} = useHttp();
- 
-    // const bodySChema = {
-    //     "dir": "ASC",
-    //     "filter": {
-    //         "cutoff_from": "2023-04-20T00:00:00.000Z",
-    //         "cutoff_to": "2023-04-20T13:00:00Z",
-    //         "delivery_method_id": [],
-    //         "provider_id": [],
-    //         "status": "awaiting_deliver",
-    //         "warehouse_id": []
-    //     },
-    //     "limit": 100,
-    //     "offset": 0,
-    //     "with": {
-    //         "analytics_data": true,
-    //         "barcodes": true,
-    //         "financial_data": true,
-    //         "translit": true
-    //     }
-    // }
-    
-    // const formData = JSON.stringify(bodySChema)
 
-   const headersOzon = {  
-        'Client-Id': '634359' ,
-     
+   const headersDef = {  
+        'Client-Id': '' ,
+        'Api-Key': ''
      }
-    const getAllOrders = async (formData) => {
+
   
-        const res = await request(`https://api-seller.ozon.ru/v3/posting/fbs/unfulfilled/list`, 'POST', formData, headersOzon);
-        console.log(res)
+
+
+    const getAllOrders = async (formData, headersOzon = headersDef) => { 
+        const res = await request(`https://api-seller.ozon.ru/v3/posting/fbs/unfulfilled/list`, 'POST', formData, headersOzon); 
         return res.result.postings.map(transformProduct)
     }
 
-    const getInfoProducts = async (article) => {
+    const productBarcode = async (formData, headersOzon = headersDef) => { 
+        const res = await request(`https://api-seller.ozon.ru/v2/posting/fbs/get-by-barcode`, 'POST', formData, headersOzon);
+        console.log(res)
+        res.result.products[0].shipment_date = res.result.shipment_date
+        res.result.products[0].posting_number = res.result.posting_number
+        return res.result.products
+    }
 
-        const res = article.map(async (item) => {
-          const res = await request(`http://localhost:3001/product?article=${item.productArt}`, 'GET');
-          res.postingNumber = item.postingNumber;
-          res.date = item.date;
-          res.price = item.productPrice
-          return res;
-        })
-        return res 
+    const productBarcodeYandex = async (barcode) => {  
+       if(barcode.length <= 10){
+        const res = await request(`http://10.0.0.4:3004/yandex-barcode/${barcode}`, 'GET', null); 
+        return res.order
+       }
+    }
 
+    const getWerehouse = async (formData, headersOzon = headersDef) => { 
+        const res = await request(`https://api-seller.ozon.ru/v3/posting/fbs/get`, 'POST', formData, headersOzon);
+        console.log(res)
+      
+        return res.result
     }
  
-    const transformProduct = (product) => {
+
  
+
+    const getInfoProducts = async () => {
+          const res = await request(`http://10.0.0.4:3004/products-for-orders`, 'GET');
+        return res 
+    }
+
+    const getPhotoProducts = async () => {
+        const res = await request(`http://10.0.0.4:3004/allproducts`, 'GET');
+      return res 
+  }
+
+    const updateData = async (url,method, body) => {
+        const res = await request(url, method, body);
+    }
+
+ 
+
+    const transformBaskets = (baskets) => {
+         
+        return{
+            art: baskets.articles,
+            sku: baskets.sku_id
+        } 
+     } 
+    
+ 
+    const transformProduct = (product) => {
+        
         return{
             postingNumber: product.posting_number,
             date: product.shipment_date,
@@ -65,7 +82,7 @@ const useOrderService = () => {
 
 
 
-    return {loading, error, clearError, getAllOrders, getInfoProducts }
+    return {loading, error, clearError, getAllOrders, getInfoProducts, updateData, productBarcode, getPhotoProducts, getWerehouse, productBarcodeYandex}
 }
 
 export default useOrderService;

@@ -32,6 +32,17 @@ tbody{
     }
 }
 
+
+tbody{
+    div{
+        display: flex;
+        margin-top: 100px;
+        justify-content: space-around;
+        
+ 
+    }
+}
+
 .order{
     width: 1075px;
     height: 1535px;
@@ -231,8 +242,12 @@ h6{
 
 }
 
+<<<<<<< HEAD
 .warehouse{
     display: block;
     width: 800px;
     margin: 0 auto;
 }
+=======
+ 
+>>>>>>> 17484926198a6b3bed63c3d407cc01e9bb5ecbad

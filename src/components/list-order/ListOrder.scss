@@ -1,16 +1,27 @@
 .list-order__item{
     border: 1px solid black;
-    padding: 0 5px 0 5px;
+    padding: 5px;
     text-align: center;
     margin: 0;
 }
-
+h1{
+    width: 300px;
+    margin: 0 auto;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 48px;
+}
 .list-order{
     width: 1550px;
- 
+    font-weight: bold;
     margin-top: 30px;
     display: block;
     border: none;
+}
+
+.list-order__item-name{
+    text-align: start;
+    padding: 5px 15px 5px 5px;
 }
 .total-text{
     font-size: 30px;
@@ -56,4 +67,10 @@ h2{
 .date{
     font-size: 40px;
     font-weight: bold;
+<<<<<<< HEAD
 }
+=======
+}
+
+ 
+>>>>>>> 17484926198a6b3bed63c3d407cc01e9bb5ecbad

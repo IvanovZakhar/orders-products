@@ -310,7 +310,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
                             Success
                         </ListGroup.Item>
                     </ListGroup> */} 
-                    <Container>
+                    {/* <Container>
                         <Row>
                             {newOrders.map(item => {  
                                 return( 
@@ -334,7 +334,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
                                 
                             })}
                         </Row>
-                   </Container>
+                   </Container> */}
                
                     <img className='photo-order' src={photo}/>
  

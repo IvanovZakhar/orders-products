@@ -106,8 +106,14 @@ const UpdateStatusWarehouse = ({photoProducts}) => {
                             setModalOpenMasters(false) 
                             setStatus('Успешно!')
                             setStatusModalOpen(true)
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 3000);
                         }).catch(er => {
                             setStatus('Ошибка')
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 3000);
                         })
                     return res})
             }else if(scanCode === 'karlen111'){
@@ -118,8 +124,14 @@ const UpdateStatusWarehouse = ({photoProducts}) => {
                         setModalOpenMasters(false) 
                         setStatus('Успешно!')
                         setStatusModalOpen(true)
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 3000);
                     }).catch(er => {
                         setStatus('Ошибка')
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 3000);
                     })
                     return res})
             }

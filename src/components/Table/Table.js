@@ -315,11 +315,11 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
                             {newOrders.map(item => {  
                                 return( 
                                     <Col>
-                                        <Card style={{ width: '18rem' }}>
-                                            <Card.Img variant="top" style={{width: '200px', height: '180px', margin: '0 auto'}} src={item.main_photo_link} />
+                                        <Card style={{ width: '18rem'  }}>
+                                            <Card.Img variant="top" style={{width: '150px', height: '150px', margin: '0 auto'}} src={item.main_photo_link} />
                                             <Card.Body>
                                                 <Card.Title style={{fontWeight: 'bold'}}>{item.article}</Card.Title>
-                                                <Card.Text>
+                                                <Card.Text style={{lineHeight: '18px'}}>
                                                     {item.name_of_product}
                                                 </Card.Text>
                                             </Card.Body>

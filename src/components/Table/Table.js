@@ -1,53 +1,172 @@
-import NavLink from '../NavLink/Nav-link';
- 
+import NavLink from '../NavLink/Nav-link'; 
 import { useState, useEffect } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
-import onScan from 'onscan.js'
-import './Table.scss'
+import onScan from 'onscan.js' 
+import Card from 'react-bootstrap/Card';
+import './Table.scss' 
+import useOrderService from '../../services/OrderService';
+import ModalSend from '../modal/modal-send';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Badge from 'react-bootstrap/Badge';
+import ModalStatus from '../modal/modal-status';
 
-function Table({props, date, setDate, onLoadingProduct, loading, error, setCompany, company, warehouse}) {
+function Table({props, date, setDate, onLoadingProduct, loading, error, setCompany, company, warehouse, orders}) {
     const [barcode, setBarcode] = useState('');
     const [onScanInitialized, setOnScanInitialized] = useState(false) 
-    console.log(props)
-  useEffect(() => {
-    if (!onScanInitialized) {
-      onScan.attachTo(document);
-      setOnScanInitialized(true);
-    }
-  }, []);
+    const [addedOrdersBarcode, setAddedOrdersBarcode] = useState([]) 
+    const [dataOrders,  setDataOrders] = useState([])
+    const {updateProductQuantity} = useOrderService()
+    // const [conditionOrders, serConditionOrders] = useState(false)
+    const [modalOpen, setModalOpen] = useState(false);
+    const [numberPosting, setNumberPosting] = useState('')
+    const [newOrders,  setNewDataOrders] = useState([])
+    const [status, setStatus] = useState('')
+    const [modalStatusOpen, setStatusModalOpen] = useState(false);
 
-  useEffect(() => {
-    onLoadingProduct(barcode);
-  }, [barcode]);
+    useEffect(() => {  
+        const handleScan = (e) => {
+            const scanCode = e.detail.scanCode;
+            console.log(scanCode)
+            if(scanCode === 'orders111'){
+                window.location.href = `/table` 
+              }else if(scanCode === 'ref111'){
+                  window.location.href = `/adding-products`
+              }else if(scanCode === 'listorder111'){
+                  window.location.href = `/update-status-warehouse`
+              }else if(scanCode === 'print111' ){
+                window.location.href = '/print-barcode'
+              }
+          };
+
+        document.addEventListener('scan', handleScan);
+
+        // Очистка обработчика событий при размонтировании компонента
+        return () => {
+        document.removeEventListener('scan', handleScan);
+        };
+    }, []); 
+
+    useEffect(()=> {
+        if(props[0]){
+            setNumberPosting(props[0].postingNumber) 
+        }
+    }, [props])
+
+
+    useEffect(()=>{
+       console.log(orders)
+        if(orders.length){
+            setDataOrders(orders)
+        }else{
+            setDataOrders([])
+        }
+    }, [orders])
+
+    useEffect(() => { 
+
+        const handleScan = (e) => {
+            const scanCode = e.detail.scanCode;
+            setBarcode(scanCode);
+            console.log(e.detail.scanCode);
+            if (scanCode === 'SEND111') { 
+         
+              updateProductQuantity({ comment: numberPosting, productsToUpdate: newOrders })
+                .then((res) => { 
+                setModalOpen(false);
+                setStatusModalOpen(true)
+                setStatus('Успешно!')
+               // Задержка перед перезагрузкой страницы
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
+              }).catch(er => {
+                setModalOpen(false)
+                setStatusModalOpen(true)
+                setStatus('Ошибка!')
+                // Задержка перед перезагрузкой страницы
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
+              })
+            }
+          
+            setDataOrders((prevOrders) => {
+              const updatedOrders = prevOrders.map((order) => {
+                if (order.barcode === scanCode) {
+                  if (order.counter !== order.quantity) {
+                    return {
+                      ...order,
+                      counter: order.counter + 1,
+                    };
+                  } else{
+                    return{
+                        ...order,
+                        success: true
+                    }
+
+                  }
+                }
+                return order;
+              });
+              return updatedOrders;
+            } );
+          };
+
+        document.addEventListener('scan', handleScan);
+
+        // Очистка обработчика событий при размонтировании компонента
+        return () => {
+        document.removeEventListener('scan', handleScan);
+        };
+    }, [newOrders]); 
+    
  
-  useEffect(() => {
-    const handleScan = (e) => {
-      console.log(e.detail.scanCode);
-      const scanCode = e.detail.scanCode;
-    //   if (scanCode === '634359') {
-    //     setCompanyName('АрсеналЪ');
-    //     setCompany({
-    //       'Client-Id': '634359',
-    //       'Api-Key': '88e173c2-16ad-4a13-a3a5-c322f8a6e305'
-    //     });
-    //   } else if (scanCode === '611694') {
-    //     setCompanyName('ЦМА');
-    //     setCompany({
-    //       'Client-Id': '611694',
-    //       'Api-Key': '95596469-5a81-4bac-a052-7aa473a405f9'
-    //     });
-    //   }
-      setBarcode(scanCode);
-    };
+    useEffect(() => {
+        const updateData = dataOrders.map(order => {
+            if(order.quantity === order.counter){
+                return{
+                    ...order,
+                    success: true
+                }
+            }
+            return order
+        })
+        setNewDataOrders(updateData)
+    }, [dataOrders])
+      
+        
 
-    document.addEventListener('scan', handleScan);
+    useEffect(() => {
+        if (!onScanInitialized) {
+        onScan.attachTo(document);
+        setOnScanInitialized(true);
+        }
+       
+    }, []);
 
-    // Очистка обработчика событий при размонтировании компонента
-    return () => {
-      document.removeEventListener('scan', handleScan);
-    };
-  }, []);
+    useEffect(() => {
+            if(barcode){
+                onLoadingProduct(barcode);
+            }
+    }, [barcode]);
 
+    useEffect(() => {
+        // Проверяем, все ли элементы в массиве имеют success: true
+        const allSuccess = newOrders.length ? newOrders.every((order) => order.success === true) : false
+       
+        if (allSuccess) {
+        // Выполняем нужное действие, так как все элементы имеют success: true
+        console.log("Все элементы имеют success: true");
+        setModalOpen(true)
+        }
+    }, [newOrders])
+    
+ 
+
+
+     
     const elem = props ? ( ) => {
          
         const {Column14, Column15, Column16, 
@@ -55,7 +174,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
              Column23, Column24, Column25, Station, article, 
              date, eyelet, height, loops, name, number_of_roll, postingNumber,
             price, roll, screws, weight, width, Column21, quantity, photo} = props[0];
-            console.log(date)
+          
     
         return (
             <div className='main-table'>
@@ -63,21 +182,9 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
                     <thead>
             
                     <tr className='main__head'>
-                    <tr>
+                    <tr className='name_head'>
                         <th className='name'><h2>{company}</h2></th>
-                    </tr>
-                        <tr className='info'>
-                            <th>Дата оформления</th>
-                            <th>  {getCurrentDate()}</th>
-                            <tr>
-                                <th>Оформил</th>
-                                <th>Захар</th>
-                            </tr>
-                            <div className='collector'>
-                                <th >Сборщик</th>
-                                <th > </th>
-                            </div>
-                        </tr>
+                    </tr> 
                         <tr  className='about-head'>
                             <th>Дата отгрузки</th>
                             <th className='about-head__time'>{date}</th>
@@ -193,7 +300,46 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
                     </div>
                     </tbody>
                 </table>
-                <img src={photo}/>
+               <div> 
+                    {/* <ListGroup>
+                        <ListGroup.Item>Cras justo odio</ListGroup.Item>
+                        <ListGroup.Item>Dapibus ac facilisis in</ListGroup.Item>
+                        <ListGroup.Item>Morbi leo risus</ListGroup.Item>
+                        <ListGroup.Item>Porta ac consectetur ac</ListGroup.Item>
+                        <ListGroup.Item action variant="success" style={{height: '100px', fontSize: '28px', fontWeight: 'bold'}}>
+                            Success
+                        </ListGroup.Item>
+                    </ListGroup> */} 
+                    <Container>
+                        <Row>
+                            {newOrders.map(item => {  
+                                return( 
+                                    <Col>
+                                        <Card style={{ width: '18rem' }}>
+                                            <Card.Img variant="top" style={{width: '200px', height: '180px', margin: '0 auto'}} src={item.main_photo_link} />
+                                            <Card.Body>
+                                                <Card.Title style={{fontWeight: 'bold'}}>{item.article}</Card.Title>
+                                                <Card.Text>
+                                                    {item.name_of_product}
+                                                </Card.Text>
+                                            </Card.Body>
+                                            <Col style={{display: 'flex', justifyContent: 'center'}}>
+                                                <Badge bg={`${item.success ? "success":"secondary"}`} style={{fontSize: '25px'}}>{item.counter} / {item.quantity}</Badge>
+                                            
+                                            
+                                            </Col>
+                                        </Card>
+                                    </Col>
+                                        )
+                                
+                            })}
+                        </Row>
+                   </Container>
+               
+                    <img className='photo-order' src={photo}/>
+ 
+     
+               </div>
             </div>
          
         )
@@ -203,28 +349,22 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
      const Order = elem ? elem() : <h4>Введите штрихкод</h4> 
     return (
         <>  
-            <h5 onClick={() => {setBarcode('400132886984000')}}>{company}</h5>
+            <h5 onClick={() => {setBarcode('400175596448000')}}>{company}</h5>
             <tr className='warehouse'>
                 <th className='name-warehouse'><h6>СКЛАД:</h6></th>
                 <th className='address'><h6>{`${warehouse.slice(0, 8)}`}</h6></th>
             </tr>
 
             <NavLink date={date} setDate={setDate}  />
-            {error ? <h4>Штрихкод товара не найден</h4> : loading ? <GetSpinner/> : Order}   
+            {error ? <h4>Штрихкод товара не найден</h4> : loading ? <GetSpinner/> : Order}  
+            <ModalSend modalOpen={modalOpen}  setModalOpen={setModalOpen}/>
+            <ModalStatus modalStatusOpen={modalStatusOpen} setStatusModalOpen={setStatusModalOpen} status={status}/>
         </>
 )}
     
 export default Table;
 
-function getCurrentDate(separator='-'){
-
-        let newDate = new Date()
-        let date = newDate.getDate();
-        let month = newDate.getMonth() + 1;
-        let year = newDate.getFullYear();
-        
-        return `${date}${separator}${month<10?`0${month}`:`${month}`}${separator}${year}`
-        }
+ 
 
 function GetCompl({quantity, article}) {
     const divs = Array.from({ length: quantity }, (_, i) => (
@@ -246,4 +386,5 @@ function GetSpinner(){
 }
 
  
- 
+
+   

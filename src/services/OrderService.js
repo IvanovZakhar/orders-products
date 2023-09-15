@@ -7,10 +7,8 @@ const useOrderService = () => {
    const headersDef = {  
         'Client-Id': '' ,
         'Api-Key': ''
-     }
-     console.log(_url)
-  
-
+     } 
+ 
 
     const getAllOrders = async (formData, headersOzon = headersDef) => { 
         const res = await request(`https://api-seller.ozon.ru/v3/posting/fbs/unfulfilled/list`, 'POST', formData, headersOzon); 
@@ -64,6 +62,12 @@ const useOrderService = () => {
         return res
     }
 
+    const getAllOrdersWarehouse = async () => { 
+        const res = await request(`${_url}/all-orders-warehouse`, 
+                                    'GET') 
+        return res
+    }
+
     const getWerehouse = async (formData, headersOzon = headersDef) => { 
         const res = await request(`https://api-seller.ozon.ru/v3/posting/fbs/get`, 'POST', formData, headersOzon);
         console.log(res)
@@ -83,11 +87,23 @@ const useOrderService = () => {
     const getPhotoProducts = async () => {
         const res = await request(`${_url}/allproducts`, 'GET');
       return res 
-  }
+    }
+
+    const getProductsForOrdersBarcode = async () => {
+        const res = await request(`${_url}/products-for-orders-barcode`, 'GET');
+    return res 
+    }
 
    
-
- 
+  const getAllProductsWarehouse = async () => {
+        
+    const res = await request(
+                                `${_url}/products-for-warehouse`, 
+                                'GET' 
+                                )
+  
+    return res
+}
 
     const transformBaskets = (baskets) => {
          
@@ -97,6 +113,16 @@ const useOrderService = () => {
         } 
      } 
     
+
+     const printBarcode = async (barcode, quantity) => {
+        
+        const res = await request(
+                                    `http://localhost:3001/print?filename=${barcode}&copies=${quantity}`, 
+                                    'GET' 
+                                    )
+      
+        return res
+    }
  
 
     const transformProduct = (product) => {
@@ -108,13 +134,83 @@ const useOrderService = () => {
             productName: product.products[0].name,
             productPrice: product.products[0].price,
             quantity: product.products[0].quantity,
-            warehouse: product.delivery_method.warehouse
+            warehouse: product.delivery_method.warehouse,
+            
         
         } 
      }
 
+    
+     const updateProducts = async (data) => {
+        const res = await request(
+            `${_url}/update/products-for-warehouse/`, 
+            'POST', 
+            JSON.stringify(data) 
+            )
 
-    return {loading, error, clearError, getAllOrders, getInfoProducts, updateData, productBarcode, getPhotoProducts, getWerehouse, productBarcodeYandex}
+        return res
+    }
+
+    const updateProductQuantity = async (data) => {
+        const res = await request(
+            `${_url}/update/products-for-warehouse/updateQuantity`, 
+            'POST', 
+            JSON.stringify(data) 
+            )
+
+        return res
+    }
+
+    const updateProductQuantityPlus = async (productsToUpdate) => {
+        const res = await request(
+            `${_url}/update/products-for-warehouse/updateQuantity-plus`, 
+            'POST', 
+            JSON.stringify({productsToUpdate}) 
+            )
+
+        return res
+    }
+
+    const updateWarehouseOrderStatus = async (data) => {
+        const res = await request(
+            `${_url}/updateOrderWarehouseStatus`, 
+            'POST', 
+            JSON.stringify(data) 
+            )
+
+        return res
+    }
+
+   
+    const getAllLogs = async () => {
+        
+        const res = await request(`${_url}/logs/products-for-warehouse`, 
+                                    'GET')
+    
+        return res
+    }
+ 
+
+    return {loading, 
+            error, 
+            clearError, 
+            getAllOrders, 
+            getInfoProducts, 
+            updateData, 
+            productBarcode, 
+            getPhotoProducts, 
+            getWerehouse, 
+            productBarcodeYandex, 
+            getAllProductsWarehouse,
+            loading,
+            printBarcode, 
+            updateProducts,
+            getAllOrdersWarehouse,
+            getProductsForOrdersBarcode,
+            updateProductQuantity,
+            updateProductQuantityPlus,
+            updateWarehouseOrderStatus,
+            getAllLogs }
 
 }
 

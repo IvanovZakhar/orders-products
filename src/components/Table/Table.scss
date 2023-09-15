@@ -8,6 +8,7 @@ th, td{
     justify-content: space-around;
     img{
         width: 1000px;
+        height: 1000px;
         object-fit: contain;
         border: 5px solid black;
     }
@@ -58,10 +59,9 @@ tbody{
 .about-head{
     display: flex;
     flex-direction: column;
-    width: 260px;
-    margin-top: 2px;
+    width: 400px; 
     th{
-        font-size: 24px;
+        font-size: 36px; 
     }
     .about-head__time{
         height: 53px;
@@ -105,10 +105,12 @@ tbody{
 }
 
 .name{
-    width: 300px;
- 
+    width: 300px; 
     font-size: 30px;
+    height: 109px;
 }
+
+ 
 
 h2{
     font-size: 48px;

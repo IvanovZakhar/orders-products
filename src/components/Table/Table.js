@@ -301,7 +301,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
                     </tbody>
                 </table>
                <div> 
-                    {/* <ListGroup>
+                   {/* <ListGroup>
                         <ListGroup.Item>Cras justo odio</ListGroup.Item>
                         <ListGroup.Item>Dapibus ac facilisis in</ListGroup.Item>
                         <ListGroup.Item>Morbi leo risus</ListGroup.Item>
@@ -309,8 +309,8 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
                         <ListGroup.Item action variant="success" style={{height: '100px', fontSize: '28px', fontWeight: 'bold'}}>
                             Success
                         </ListGroup.Item>
-                    </ListGroup> */} 
-                    {/* <Container>
+                    </ListGroup> */}
+                    <Container>
                         <Row>
                             {newOrders.map(item => {  
                                 return( 
@@ -334,7 +334,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
                                 
                             })}
                         </Row>
-                   </Container> */}
+                   </Container>
                
                     <img className='photo-order' src={photo}/>
  

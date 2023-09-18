@@ -204,26 +204,28 @@ function App() {
 
 
   function generateOrderInfo (dataProduct) {
-   
+    console.log(dataProduct)
+    console.log( productsOrdersBarcode)
     const productsForOrders = productsOrdersBarcode.filter(product => product.article === dataProduct[0].offer_id)
     // После данных взаимодействий в зависимости от результата устанавливаем режим сборщика или не устанавливаем
     // Так же включая режим сборщика умножаем dataProduct[0].quantity на все quantity в productsForOrders.orders 
- 
-    // if(productsForOrders.length){   
-    //    const orders = productsForOrders[0].orders.map(order => {
-    //       const elem = productsWarehouse.filter(product => product.article === order.article)
-        
-    //       return{...order, 
-    //             quantity: order.quantity * dataProduct[0].quantity, 
-    //             counter: 0 , 
-    //             success: false, 
-    //             // main_photo_link: elem[0].main_photo_link,
-    //             name_of_product: elem[0].name_of_product}
-    //    })
-    //    setOrders(orders)
-    // }else{
-    //   setOrders([])
-    // }
+    console.log(productsForOrders)
+    if(productsForOrders.length){   
+       const orders = productsForOrders[0].orders.map(order => {
+          const elem = productsWarehouse.filter(product => product.article === order.article)
+          
+          console.log(elem)
+          return{...order, 
+                quantity: order.quantity * dataProduct[0].quantity, 
+                counter: 0 , 
+                success: false, 
+                main_photo_link: elem[0].main_photo_link,
+                name_of_product: elem[0].name_of_product}
+       })
+       setOrders(orders)
+    }else{
+      setOrders([])
+    }
     const productBarcode = allProducts.filter(item => item.article === dataProduct[0].offer_id)
     console.log(productBarcode)
     productBarcode[0].postingNumber = dataProduct[0].posting_number;

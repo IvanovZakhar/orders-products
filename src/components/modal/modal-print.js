@@ -19,7 +19,7 @@ const customStyles = {
   },
 };
 
-function ModalPrint({ modalOpen, setModalOpen, photo }) { 
+function ModalPrint({ modalOpen, setModalOpen, photo, printName }) { 
     const Barcode = ({barcodeOrders}) => {
         const options = {
             value: `${barcodeOrders}`,
@@ -48,6 +48,7 @@ function ModalPrint({ modalOpen, setModalOpen, photo }) {
         style={customStyles}
         ariaHideApp={false} 
       >
+            <h2>{printName.slice(0,3) === 'OZN' ? 'Штрихкод': printName.slice(0,3) === 'BAR' ? 'Наклейка': null}</h2>
             <img src={photo ? photo.main_photo_link : null} style={{width: '300px', marginLeft: '140px'}}/>
          <h2 style={{textAlign: 'center', fontSize:'86px' }}>1 шт</h2> 
          <Barcode barcodeOrders='print222' />

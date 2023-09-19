@@ -136,7 +136,7 @@ const PrintBarcode = () => {
  
             <Row>
                  <h1>Выберите штрихкод для ПЕЧАТИ</h1>
-                 <ModalPrint modalOpen={modalOpen} setModalOpen={setModalOpen} photo={photo}/>
+                 <ModalPrint modalOpen={modalOpen} setModalOpen={setModalOpen} photo={photo} printName={printName}/>
                   {/* {products.map(product => {
                     const {article, main_photo_link, name_of_product, barcode} = product
                     return(

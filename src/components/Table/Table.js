@@ -164,7 +164,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
     }, [newOrders])
     
  
-
+    console.log(newOrders)
 
      
     const elem = props ? ( ) => {
@@ -310,7 +310,8 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
                             Success
                         </ListGroup.Item>
                     </ListGroup> */}
-                    <Container>
+                    <Container > 
+                        {newOrders.length ? <h2 style={{color: 'green'}}>Отсканируйте штрихкоды</h2> : null}
                         <Row>
                             {newOrders.map(item => {  
                                 return( 

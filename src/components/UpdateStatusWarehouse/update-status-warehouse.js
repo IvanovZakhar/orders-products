@@ -18,7 +18,7 @@ const UpdateStatusWarehouse = ({photoProducts}) => {
     const [modalStatusOpen, setStatusModalOpen] = useState(false);
     const [photos, setPhotos] = useState([])
     const [modalOpenMasters, setModalOpenMasters] = useState(false)
-
+    console.log(photoProducts)
     // Маршрут между страницами по barcode
     useEffect(() => { 
 
@@ -50,6 +50,8 @@ const UpdateStatusWarehouse = ({photoProducts}) => {
 
     useEffect(() => {
         setPhotos(photoProducts)
+        const elem = photoProducts.filter(item => item.article === 'AR15С101955-06')
+        console.log(elem)
     }, [photoProducts])
 
     useEffect(() => {
@@ -85,8 +87,8 @@ const UpdateStatusWarehouse = ({photoProducts}) => {
                     setOrder({
                         ...res[0],
                         products: res[0].products.map(product => {
-                            const photo = prevPhotos.filter(photo => photo.article === product.article)
-               
+                            console.log(prevPhotos)
+                            const photo = prevPhotos.filter(photo => photo.article === product.article) 
                             return{
                                 ...product,
                                 main_photo_link: photo[0].main_photo_link

@@ -260,7 +260,7 @@ function App() {
                                          orders={orders}/>} /> 
         <Route path="/adding-products" element={ <AddingProducts products={productsWarehouse}/>} /> 
         <Route path="/print-barcode" element={ <PrintBarcode />} /> 
-        <Route path="/update-status-warehouse" element={ <UpdateStatusWarehouse photoProducts={photoProducts}/>} /> 
+        <Route path="/update-status-warehouse" element={ <UpdateStatusWarehouse photoProducts={productsWarehouse}/>} /> 
         <Route path="/list-order" element={<ListOrder 
                                                     props={allOrders} 
                                                     date={date} 

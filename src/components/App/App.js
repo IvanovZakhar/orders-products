@@ -204,23 +204,22 @@ function App() {
 
 
   function generateOrderInfo (dataProduct) {
-    console.log(dataProduct)
-    console.log( productsOrdersBarcode)
+ 
     const productsForOrders = productsOrdersBarcode.filter(product => product.article === dataProduct[0].offer_id)
     // После данных взаимодействий в зависимости от результата устанавливаем режим сборщика или не устанавливаем
     // Так же включая режим сборщика умножаем dataProduct[0].quantity на все quantity в productsForOrders.orders 
     console.log(productsForOrders)
     if(productsForOrders.length){   
        const orders = productsForOrders[0].orders.map(order => {
-          const elem = productsWarehouse.filter(product => product.article === order.article)
-          
-          console.log(elem)
+          const elem =  allProducts.filter(item => item.article === order.article)
+         
+          console.log(elem[0].photo)
           return{...order, 
                 quantity: order.quantity * dataProduct[0].quantity, 
                 counter: 0 , 
                 success: false, 
-                main_photo_link: elem[0].main_photo_link,
-                name_of_product: elem[0].name_of_product}
+                main_photo_link: elem[0].photo,
+                name_of_product: elem[0].name}
        })
        setOrders(orders)
     }else{

@@ -50,8 +50,7 @@ const UpdateStatusWarehouse = ({photoProducts}) => {
 
     useEffect(() => {
         setPhotos(photoProducts)
-        const elem = photoProducts.filter(item => item.article === 'AR15С101955-06')
-        console.log(elem)
+         
     }, [photoProducts])
 
     useEffect(() => {
@@ -68,15 +67,9 @@ const UpdateStatusWarehouse = ({photoProducts}) => {
                         setModalOpen(false)
                        setModalOpenMasters(true) 
                     return res})
-           }else if(scanCode === 'pain111') {
+           } else if(scanCode === 'pack111') {
                 setOrder(prevOrder => {
-                    const res = {...prevOrder, status: 'Покраска'}
-                    setModalOpen(false)
-                    setModalOpenMasters(true) 
-                    return res   })
-           }else if(scanCode === 'pack111') {
-                setOrder(prevOrder => {
-                    const res = {...prevOrder, status: 'Упакован'}
+                    const res = {...prevOrder, status: 'Готов'}
                     setModalOpen(false)
                     setModalOpenMasters(true) 
                     return res})
@@ -201,7 +194,7 @@ const UpdateStatusWarehouse = ({photoProducts}) => {
                             <th colSpan={3} style={{fontSize: '26px'}}>
                                 Статус
                                 <br/>
-                                <Badge bg={ status === "Упакован" ?  "success" :  status === "Изготовление" ? "primary" : "warning"  } 
+                                <Badge bg={ status === "Готов" ?  "success" : "primary"  } 
                                     style={{fontSize: '26px'}}>
                                     {status}
                                 </Badge></th>

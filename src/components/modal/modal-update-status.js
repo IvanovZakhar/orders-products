@@ -66,14 +66,9 @@ function ModalSendUpdateStatus({modalOpen, setModalOpen}) {
          </h3> 
          <br/>   <br/>    <br/>
          <br/>   <br/>   <br/>
+          
          <h3 style={{textAlign: 'center'}}>
-            <Badge bg= "warning" style={{fontSize: '24px'}}>Покраска</Badge> 
-            {<Barcode barcodeOrders={'pain111'}/>}
-         </h3> 
-         <br/>   <br/>    <br/>
-         <br/>   <br/>    <br/>
-         <h3 style={{textAlign: 'center'}}>
-            <Badge bg= "success" style={{fontSize: '24px'}}>Упакован</Badge> 
+            <Badge bg= "success" style={{fontSize: '24px'}}>Готов</Badge> 
             {<Barcode barcodeOrders={'pack111'}/>}
          </h3> 
         

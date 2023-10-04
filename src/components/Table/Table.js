@@ -72,7 +72,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
             console.log(e.detail.scanCode);
             if (scanCode === 'SEND111') { 
          
-              updateProductQuantity({ comment: numberPosting, productsToUpdate: newOrders })
+              updateProductQuantity({ comment: `${company} ${numberPosting}`, productsToUpdate: newOrders })
                 .then((res) => { 
                 setModalOpen(false);
                 setStatusModalOpen(true)

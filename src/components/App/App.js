@@ -246,8 +246,8 @@ function App() {
                 quantity: order.quantity * res.items[0].count, 
                 counter: 0 , 
                 success: false, 
-                main_photo_link: elem.length ?  elem[0].main_photo_link : null,
-                name_of_product: elem.length ?  elem[0].name_of_product : null}
+                main_photo_link: elem.length ? elem[0].main_photo_link : null,
+                name_of_product: elem.length ? elem[0].name_of_product : null}
        })
        setOrders(orders)
     }else{

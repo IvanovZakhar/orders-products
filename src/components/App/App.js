@@ -171,6 +171,7 @@ function App() {
       })
         // Устанавливаем информацию об складе
         getWerehouse(headDelivering, cma).then(data => setWarehouse(data.delivery_method.warehouse)).catch( setWarehouse("Неизвестно"))
+        console.log(dataProduct)
         // Формируем информацию о заказе
         generateOrderInfo (dataProduct)
         // Устанавливаем информацию о компании
@@ -180,20 +181,8 @@ function App() {
         console.log(er)
         productBarcodeYandex(barcode).then(res => {
          
-       
-            const productBarcode = allProducts.filter(item => item.article === res.items[0].offerId)
-      
-            productBarcode[0].postingNumber = res.id; 
-            productBarcode[0].quantity = res.items[0].count
-            productBarcode[0].date = res.delivery.shipments[0].shipmentDate 
-            productBarcode[0].warehouse = 'Яндекс' 
-              const photo = photoProducts.filter(item => item.article === res.items[0].offerId)
-      
-              productBarcode[0].photo = photo[0] ? photo[0].main_photo_link : null
-             
-              setProduct([
-                productBarcode[0]
-              ])
+        
+          generateOrderInfoYandex (res)
               setCompany('Яндекс')
          
         
@@ -205,21 +194,21 @@ function App() {
 
   function generateOrderInfo (dataProduct) {
  
-    const productsForOrders = productsOrdersBarcode.filter(product => product.article === dataProduct[0].offer_id)
+    const productsForOrders = productsOrdersBarcode.filter(product => product.article === dataProduct[0].offer_id || dataProduct[0].offerId)
     // После данных взаимодействий в зависимости от результата устанавливаем режим сборщика или не устанавливаем
     // Так же включая режим сборщика умножаем dataProduct[0].quantity на все quantity в productsForOrders.orders 
     console.log(productsForOrders)
     if(productsForOrders.length){   
        const orders = productsForOrders[0].orders.map(order => {
-          const elem =  allProducts.filter(item => item.article === order.article)
+          const elem =  photoProducts.filter(item => item.article === order.article)
          
           console.log(elem[0].photo)
           return{...order, 
                 quantity: order.quantity * dataProduct[0].quantity, 
                 counter: 0 , 
                 success: false, 
-                main_photo_link: elem[0].photo,
-                name_of_product: elem[0].name}
+                main_photo_link: elem.length ?  elem[0].main_photo_link : null,
+                name_of_product: elem.length ?  elem[0].name_of_product : null}
        })
        setOrders(orders)
     }else{
@@ -240,6 +229,43 @@ function App() {
     setProduct([
       productBarcode[0]
     ])
+  }
+
+  function generateOrderInfoYandex (res) {
+ 
+    const productsForOrders = productsOrdersBarcode.filter(product => product.article === res.items[0].offerId)
+    // После данных взаимодействий в зависимости от результата устанавливаем режим сборщика или не устанавливаем
+    // Так же включая режим сборщика умножаем dataProduct[0].quantity на все quantity в productsForOrders.orders 
+    console.log(productsForOrders)
+    if(productsForOrders.length){   
+       const orders = productsForOrders[0].orders.map(order => {
+          const elem =  photoProducts.filter(item => item.article === order.article)
+         
+          console.log(elem[0].photo)
+          return{...order, 
+                quantity: order.quantity * res.items[0].count, 
+                counter: 0 , 
+                success: false, 
+                main_photo_link: elem.length ?  elem[0].main_photo_link : null,
+                name_of_product: elem.length ?  elem[0].name_of_product : null}
+       })
+       setOrders(orders)
+    }else{
+      setOrders([])
+    }
+    const productBarcode = allProducts.filter(item => item.article === res.items[0].offerId)
+      
+    productBarcode[0].postingNumber = res.id; 
+    productBarcode[0].quantity = res.items[0].count
+    productBarcode[0].date = res.delivery.shipments[0].shipmentDate 
+    productBarcode[0].warehouse = 'Яндекс' 
+      const photo = photoProducts.filter(item => item.article === res.items[0].offerId)
+
+      productBarcode[0].photo = photo[0] ? photo[0].main_photo_link : null
+     
+      setProduct([
+        productBarcode[0]
+      ])
   }
  
   return (

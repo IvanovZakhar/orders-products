@@ -61,12 +61,6 @@ const UpdateStatusWarehouse = ({photoProducts}) => {
             
            if(scanCode === 'modal111'){
                 setModalOpen(true)
-           }else if(scanCode === 'prod111') {
-                setOrder(prevOrder => {
-                    const res = {...prevOrder, status: 'Изготовление'}  
-                        setModalOpen(false)
-                       setModalOpenMasters(true) 
-                    return res})
            } else if(scanCode === 'pack111') {
                 setOrder(prevOrder => {
                     const res = {...prevOrder, status: 'Готов'}
@@ -84,7 +78,7 @@ const UpdateStatusWarehouse = ({photoProducts}) => {
                             const photo = prevPhotos.filter(photo => photo.article === product.article) 
                             return{
                                 ...product,
-                                main_photo_link: photo[0].main_photo_link
+                                main_photo_link: photo.length ? photo[0].main_photo_link : null
                             }
                         })
                     }) 

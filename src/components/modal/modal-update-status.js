@@ -59,11 +59,7 @@ function ModalSendUpdateStatus({modalOpen, setModalOpen}) {
      
       >
         <h2>Установить статус: </h2>
-        <br/>   <br/>   <br/>
-         <h3 style={{textAlign: 'center'}}>
-            <Badge bg= "primary" style={{fontSize: '24px'}}>Изготовление</Badge> 
-            {<Barcode barcodeOrders={'prod111'}/>}
-         </h3> 
+   
          <br/>   <br/>    <br/>
          <br/>   <br/>   <br/>
           

@@ -63,7 +63,9 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
             setDataOrders([])
         }
     }, [orders])
-
+           
+           
+console.log(company)
     useEffect(() => { 
 
         const handleScan = (e) => {
@@ -71,8 +73,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
             setBarcode(scanCode);
             console.log(e.detail.scanCode);
             if (scanCode === 'SEND111') { 
-         
-              updateProductQuantity({ comment: `${company} ${numberPosting}`, productsToUpdate: newOrders })
+              updateProductQuantity({ comment: `${numberPosting}`, productsToUpdate: newOrders })
                 .then((res) => { 
                 setModalOpen(false);
                 setStatusModalOpen(true)

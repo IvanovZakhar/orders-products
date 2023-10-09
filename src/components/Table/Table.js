@@ -12,7 +12,7 @@ import Col from 'react-bootstrap/Col';
 import Badge from 'react-bootstrap/Badge';
 import ModalStatus from '../modal/modal-status';
 
-function Table({props, date, setDate, onLoadingProduct, loading, error, setCompany, company, warehouse, orders}) {
+function Table({props, date, setDate, onLoadingProduct, loading, error, setCompany, company, warehouse, orders, logs}) {
     const [barcode, setBarcode] = useState('');
     const [onScanInitialized, setOnScanInitialized] = useState(false) 
     const [addedOrdersBarcode, setAddedOrdersBarcode] = useState([]) 
@@ -175,8 +175,10 @@ console.log(company)
              Column23, Column24, Column25, Station, article, 
              date, eyelet, height, loops, name, number_of_roll, postingNumber,
             price, roll, screws, weight, width, Column21, quantity, photo} = props[0];
-          
-    
+
+        const packed = logs.find(log => log.comment === postingNumber)
+        console.log(packed)
+
         return (
             <div className='main-table'>
                 <table className='order'>   
@@ -312,9 +314,9 @@ console.log(company)
                         </ListGroup.Item>
                     </ListGroup> */}
                     <Container > 
-                        {newOrders.length ? <h2 style={{color: 'green'}}>Отсканируйте штрихкоды</h2> : null}
+                        {newOrders.length ? <h2 style={{color: 'grey'}}>Отсканируйте штрихкоды:</h2> : null}
                         <Row>
-                            {newOrders.map(item => {  
+                            {packed ? <h2 style={{color: 'green'}}>Упакован!</h2> : newOrders.map(item => {  
                                 return( 
                                     <Col>
                                         <Card style={{ width: '18rem'  }}>

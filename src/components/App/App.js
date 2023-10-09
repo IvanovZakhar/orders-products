@@ -102,7 +102,7 @@ function App() {
 
     getAllOrders(formData, key).then(orders => { 
       getAllLogs().then(logs => {
-      
+        setLogs(logs)
         const res = orders.map(order => {
           const filtRes = logs.find(log => log.comment === order.postingNumber)
            if(filtRes){
@@ -282,7 +282,8 @@ function App() {
                                          setCompany={setCompany}
                                          company={company}
                                          warehouse={warehouse}
-                                         orders={orders}/>} /> 
+                                         orders={orders} 
+                                        logs={logs}/>} /> 
         <Route path="/adding-products" element={ <AddingProducts products={productsWarehouse}/>} /> 
         <Route path="/print-barcode" element={ <PrintBarcode />} /> 
         <Route path="/update-status-warehouse" element={ <UpdateStatusWarehouse photoProducts={productsWarehouse}/>} /> 

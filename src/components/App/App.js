@@ -99,7 +99,7 @@ function App() {
       'Client-Id': localStorage.clientId,
       'Api-Key': localStorage.apiKey
     };
-
+    console.log(key)
     getAllOrders(formData, key).then(orders => { 
       getAllLogs().then(logs => {
         setLogs(logs)

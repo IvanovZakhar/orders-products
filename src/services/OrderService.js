@@ -10,7 +10,7 @@ const useOrderService = () => {
      } 
  
 
-    const getAllOrders = async (formData, headersOzon = headersDef) => { 
+    const getAllOrders = async (formData, headersOzon = headersDef) => {  
         const res = await request(`https://api-seller.ozon.ru/v3/posting/fbs/unfulfilled/list`, 'POST', formData, headersOzon); 
         return res.result.postings.map(transformProduct)
     }
@@ -189,6 +189,15 @@ const useOrderService = () => {
     
         return res
     }
+    const getAllProductsWB = async () => {
+        
+        const res = await request(
+                                    `http://localhost:3000/products`, 
+                                    'GET' 
+                                    )
+      
+        return res
+    }
  
 
     return {loading, 
@@ -210,7 +219,8 @@ const useOrderService = () => {
             updateProductQuantity,
             updateProductQuantityPlus,
             updateWarehouseOrderStatus,
-            getAllLogs }
+            getAllLogs,
+            getAllProductsWB }
 
 }
 

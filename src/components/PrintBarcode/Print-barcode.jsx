@@ -12,7 +12,8 @@ import ModalPrint from '../modal/modal-print';
 
 const PrintBarcode = () => {
     const [products, setProducts] = useState([])
-    const {getAllProductsWarehouse, printBarcode} = useOrderService()
+    const [productsWB, setProductsWB] = useState([])
+    const {getAllProductsWarehouse, printBarcode, getAllProductsWB} = useOrderService()
     const [onScanInitialized, setOnScanInitialized] = useState(false) 
     const [modalOpen, setModalOpen] = useState(false)
     const [printName, setPrintName] = useState('')
@@ -20,15 +21,39 @@ const PrintBarcode = () => {
  
     
     useEffect(() => {
-        getAllProductsWarehouse().then(setProducts)
+        getAllProductsWarehouse().then(productsWarehouse =>  {
+          setProducts(productsWarehouse)
+          
+          // Данная фильтрация предназначена для WB
+
+          // getAllProductsWB().then(prodWb => {
+          //   setProductsWB(prodWb)
+          //   const res = productsWarehouse.map(item => {
+          //       const resFilter = prodWb.filter(prod => prod.article === item.article)
+          //       if(resFilter.length){
+          //         return{
+          //           ...item, 
+          //           barcodeWb: resFilter[0].barcode
+          //       } 
+          //       } else{
+          //         return item
+          //       }
+          //   })
+          //   const filtResult = res.filter(item => item.barcodeWb)
+          //   setProducts(filtResult)
+          // })
+        })
+       
     }, [])
+
+    console.log(products)
 
     useEffect(() => {
       let lastScanTime = 0;
       const handleScan = (e) => {
         console.log(e.detail.scanCode);
         const scanCode = e.detail.scanCode;
-        console.log(scanCode)
+        console.log(typeof scanCode)
         const currentTime = Date.now();
         if (currentTime - lastScanTime < 1000) {
           // Игнорировать повторное событие, если прошло менее секунды
@@ -38,7 +63,7 @@ const PrintBarcode = () => {
         lastScanTime = currentTime;
     
         // Ваш обработчик события scanCode
-        if(scanCode.slice(0,3) === 'OZN' || scanCode.slice(0,3) === 'BAR'){
+        if(scanCode.slice(0,3) === 'OZN' || scanCode.slice(0,3) === 'BAR'  || scanCode.slice(0,1) === '2'){
           setModalOpen(true)
           setPrintName(scanCode)
         }

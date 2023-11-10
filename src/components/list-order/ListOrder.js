@@ -7,7 +7,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 const ListOrder = ({props, onLoadingProducts, date, setDate, logs}) => {
-    
+        
     const {getLabelOzon} = useOrderService()
     const [labels, setLabels] = useState();
     const [name, setName] = useState('')

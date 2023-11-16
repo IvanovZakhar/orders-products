@@ -176,7 +176,7 @@ console.log(company)
              date, eyelet, height, loops, name, number_of_roll, postingNumber,
             price, roll, screws, weight, width, Column21, quantity, photo} = props[0];
 
-        const packed = logs.find(log => log.comment === postingNumber)
+        const packed = logs.length ? logs.find(log => log.comment === postingNumber) : null
         console.log(packed)
 
         return (
@@ -339,10 +339,10 @@ console.log(company)
                             })}
                         </Row>
                    </Container>
-               
+                   <h6>Цвет: {Column22}</h6>    
                     <img className='photo-order' src={photo}/>
  
-     
+                       
                </div>
             </div>
          

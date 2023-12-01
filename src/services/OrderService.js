@@ -97,11 +97,7 @@ const useOrderService = () => {
    
   const getAllProductsWarehouse = async () => {
         
-    const res = await request(
-                                `${_url}/products-for-warehouse`, 
-                                'GET' 
-                                )
-  
+    const res = await request( `${_url}/products-for-warehouse` ) 
     return res
 }
 
@@ -124,6 +120,29 @@ const useOrderService = () => {
         return res
     }
  
+    const getAllOrdersWB = async (dateFrom, dateTo, apiKey) => { 
+        const headersWB = {  
+            "Authorization": `${apiKey}`,
+            "Content-Type": "application/json"
+         } 
+        const unixDateFrom = getNewDate(dateFrom)
+        const unixDateTo = getNewDate(dateTo)
+        const res = await request(`https://suppliers-api.wildberries.ru/api/v3/orders?limit=50&next=0&dateFrom=${unixDateFrom}&dateTo=${unixDateTo}`, 'GET', null, headersWB);
+            console.log(res)
+        return res.orders
+    }
+
+    
+
+    function getNewDate (date) {
+        // Создаем объект Date из строки
+        const dateObject = new Date(date);
+
+        // Получаем Unix timestamp (количество миллисекунд с 1 января 1970 года)
+        const unixTimestamp = dateObject.getTime();
+        return  Math.floor(unixTimestamp / 1000);
+
+}
 
     const transformProduct = (product) => {
         
@@ -220,7 +239,8 @@ const useOrderService = () => {
             updateProductQuantityPlus,
             updateWarehouseOrderStatus,
             getAllLogs,
-            getAllProductsWB }
+            getAllProductsWB,
+            getAllOrdersWB }
 
 }
 

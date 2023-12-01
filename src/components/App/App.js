@@ -18,6 +18,7 @@ function App() {
   const [warehouse, setWarehouse] = useState('Неизвестен')
   const [date, setDate] = useState(''); 
   const [allOrders, setAllOrders] = useState([])
+  const [allOrdersWB, setAllOrdersWB] = useState([])
   const [logs, setLogs] = useState([])
   const {getInfoProducts, 
         getBaskets, 
@@ -32,7 +33,8 @@ function App() {
         getAllProductsWarehouse,
         getProductsForOrdersBarcode,
         getAllOrders,
-        getAllLogs} = useOrderService();
+        getAllLogs,
+        getAllOrdersWB} = useOrderService();
   const [allProducts, setAllProducts] = useState([])
   const [photoProducts, setPhotoProducts] = useState([])
   const [productsWarehouse, setProductsWarehouse] = useState([])
@@ -64,6 +66,8 @@ function App() {
     'Client-Id': JSON.parse(localStorage.apiData)[1].clientId,
     'Api-Key': JSON.parse(localStorage.apiData)[1].apiKey
   }; 
+
+ 
   
   const formData = JSON.stringify({
     dir: 'ASC',
@@ -91,7 +95,23 @@ function App() {
     getInfoProducts().then(setAllProducts) 
     getPhotoProducts().then(setPhotoProducts) 
     getProductsForOrdersBarcode().then(setProductsOrdersBarcode)
- 
+    // Получаем текущую дату
+const currentDate = new Date();
+
+// Дата неделю назад
+const weekAgo = new Date();
+weekAgo.setDate(currentDate.getDate() - 7);
+
+// Дата неделю вперед
+const weekLater = new Date();
+weekLater.setDate(currentDate.getDate() + 7);
+
+// Выводим результаты
+console.log('Неделя назад:', weekAgo.toISOString().split('T')[0]);
+console.log('Сегодня:', currentDate.toISOString().split('T')[0]);
+console.log('Неделя вперед:', weekLater.toISOString().split('T')[0]);
+
+getAllOrdersWB(weekAgo.toISOString().split('T')[0], currentDate.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(setAllOrdersWB)
   }, [])
  
   useEffect(()=> {
@@ -130,64 +150,70 @@ function App() {
    };
 
     const onLoadingProduct = (barcode) => { 
-      if(barcode.slice(0, 3) !== 'OZN' && barcode.slice(0,3) !== 'ЩЯТ' && barcode !== '1110011'){
-        const formData = JSON.stringify({
-          "barcode": `${barcode}`
-      });
-      
-      const arr = [];
       console.log(barcode)
-      productBarcode(formData, arsenal).then(dataProduct => {
-       
-        const headDelivering = JSON.stringify({
-          "posting_number":  `${dataProduct[0].posting_number}`,
-          "with": {
-              "analytics_data": false,
-              "barcodes": false,
-              "financial_data": false,
-              "product_exemplars": false,
-              "translit": false
-          }
-      })
+      if(barcode.slice(0, 3) !== 'OZN' && barcode.slice(0,3) !== 'ЩЯТ' && barcode !== '1110011' && barcode.slice(0, 2) !== 'WB'){
+          const formData = JSON.stringify({
+            "barcode": `${barcode}`
+        });
+        
+        const arr = [];
+        console.log(barcode)
+        productBarcode(formData, arsenal).then(dataProduct => {
+        
+          const headDelivering = JSON.stringify({
+            "posting_number":  `${dataProduct[0].posting_number}`,
+            "with": {
+                "analytics_data": false,
+                "barcodes": false,
+                "financial_data": false,
+                "product_exemplars": false,
+                "translit": false
+            }
+        })
+            // Устанавливаем информацию об складе
+            getWerehouse(headDelivering, arsenal).then(data => setWarehouse(data.delivery_method.warehouse)).catch( setWarehouse("Неизвестно"))
+            // Формируем информацию о заказе
+            generateOrderInfo (dataProduct)
+            // Устанавливаем информацию о компании
+            setCompany('АрсеналЪ') 
+        }).catch( 
+          productBarcode(formData, cma).then(dataProduct => {
+    
+    
+          const headDelivering = JSON.stringify({
+            "posting_number":  `${dataProduct[0].posting_number}`,
+            "with": {
+                "analytics_data": false,
+                "barcodes": false,
+                "financial_data": false,
+                "product_exemplars": false,
+                "translit": false
+            }
+        })
           // Устанавливаем информацию об складе
-          getWerehouse(headDelivering, arsenal).then(data => setWarehouse(data.delivery_method.warehouse)).catch( setWarehouse("Неизвестно"))
+          getWerehouse(headDelivering, cma).then(data => setWarehouse(data.delivery_method.warehouse)).catch( setWarehouse("Неизвестно"))
+          console.log(dataProduct)
           // Формируем информацию о заказе
           generateOrderInfo (dataProduct)
           // Устанавливаем информацию о компании
-          setCompany('АрсеналЪ') 
-      }).catch( 
-        productBarcode(formData, cma).then(dataProduct => {
-  
-   
-        const headDelivering = JSON.stringify({
-          "posting_number":  `${dataProduct[0].posting_number}`,
-          "with": {
-              "analytics_data": false,
-              "barcodes": false,
-              "financial_data": false,
-              "product_exemplars": false,
-              "translit": false
-          }
-      })
-        // Устанавливаем информацию об складе
-        getWerehouse(headDelivering, cma).then(data => setWarehouse(data.delivery_method.warehouse)).catch( setWarehouse("Неизвестно"))
-        console.log(dataProduct)
-        // Формируем информацию о заказе
-        generateOrderInfo (dataProduct)
-        // Устанавливаем информацию о компании
-        setCompany('ЦМА')
-      })
-      .catch(er =>{  
-        console.log(er)
-        productBarcodeYandex(barcode).then(res => {
-         
-        
-          generateOrderInfoYandex (res)
-              setCompany('Яндекс')
-         
-        
-        })}
-      ))
+          setCompany('ЦМА')
+        })
+        .catch(er =>{  
+          console.log(er)
+          productBarcodeYandex(barcode).then(res => {
+          
+          
+            generateOrderInfoYandex (res)
+                setCompany('Яндекс')
+          
+          
+          })}
+        ))
+      }else if(barcode.slice(0, 2) === 'WB'){
+        const order = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2))
+ 
+        generateOrderInfoWB(order)
+        setCompany('WB')
       }
   }; 
 
@@ -266,6 +292,45 @@ function App() {
       setProduct([
         productBarcode[0]
       ])
+  }
+
+  function generateOrderInfoWB (dataProduct) {
+ 
+    const productsForOrders = productsOrdersBarcode.filter(product => product.article === dataProduct[0].article)
+    // После данных взаимодействий в зависимости от результата устанавливаем режим сборщика или не устанавливаем
+    // Так же включая режим сборщика умножаем dataProduct[0].quantity на все quantity в productsForOrders.orders 
+    console.log(productsForOrders)
+    if(productsForOrders.length){   
+       const orders = productsForOrders[0].orders.map(order => {
+          const elem =  photoProducts.filter(item => item.article === order.article)
+         
+          console.log(elem[0].photo)
+          return{...order, 
+                quantity: order.quantity * 1, 
+                counter: 0 , 
+                success: false, 
+                main_photo_link: elem.length ?  elem[0].main_photo_link : null,
+                name_of_product: elem.length ?  elem[0].name_of_product : null}
+       })
+       setOrders(orders)
+    }else{
+      setOrders([])
+    }
+    const productBarcode = allProducts.filter(item => item.article === dataProduct[0].article)
+    console.log(productBarcode)
+    productBarcode[0].postingNumber = dataProduct[0].id;
+    // productBarcode[0].warehouse = data.warehouse;
+    productBarcode[0].quantity = 1
+    productBarcode[0].date = `Не указан`
+    // productBarcode[0].quantity = dataProduct.products[0].quantity;
+ 
+    const photo = photoProducts.filter(item => item.article === dataProduct[0].article)
+ 
+    productBarcode[0].photo = photo[0] ? photo[0].main_photo_link : null
+    console.log(productBarcode)
+    setProduct([
+      productBarcode[0]
+    ])
   }
  
   return (

@@ -111,7 +111,7 @@ console.log('Неделя назад:', weekAgo.toISOString().split('T')[0]);
 console.log('Сегодня:', currentDate.toISOString().split('T')[0]);
 console.log('Неделя вперед:', weekLater.toISOString().split('T')[0]);
 
-getAllOrdersWB(weekAgo.toISOString().split('T')[0], currentDate.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(setAllOrdersWB)
+getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(setAllOrdersWB)
   }, [])
  
   useEffect(()=> {
@@ -211,7 +211,7 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], currentDate.toISOString().sp
         ))
       }else if(barcode.slice(0, 2) === 'WB'){
         const order = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2))
- 
+        console.log(order)
         generateOrderInfoWB(order)
         setCompany('WB')
       }
@@ -316,6 +316,7 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], currentDate.toISOString().sp
     }else{
       setOrders([])
     }
+    console.log(allProducts)
     const productBarcode = allProducts.filter(item => item.article === dataProduct[0].article)
     console.log(productBarcode)
     productBarcode[0].postingNumber = dataProduct[0].id;

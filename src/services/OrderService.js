@@ -97,7 +97,7 @@ const useOrderService = () => {
    
   const getAllProductsWarehouse = async () => {
         
-    const res = await request( `${_url}/products-for-warehouse` ) 
+    const res = await request( `${_url}/products-for-warehouse`, 'GET') 
     return res
 }
 

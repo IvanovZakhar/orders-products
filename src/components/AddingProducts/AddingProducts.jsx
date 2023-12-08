@@ -40,8 +40,7 @@ const AddingProducts = ({products}) => {
         document.removeEventListener('scan', handleScan);
         };
     }, []); 
-
-
+ 
     useEffect(() => {
         const handleScan =  (e) => {  
 

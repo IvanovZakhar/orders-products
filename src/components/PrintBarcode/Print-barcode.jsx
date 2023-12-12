@@ -155,17 +155,19 @@ const PrintBarcode = () => {
         }}/>;
     };
 
+    const newProducts = products.filter(product => product.article.slice(0, 4) === "ПЛР-")
+
 
     return(
        
  
             <Row>
-                 {/* <h1>Выберите штрихкод для ПЕЧАТИ</h1> */}
+                 <h1>Выберите штрихкод для ПЕЧАТИ</h1>
                  <ModalPrint modalOpen={modalOpen} setModalOpen={setModalOpen} photo={photo} printName={printName}/>
-                  {products.map(product => {
+                  {newProducts.map(product => {
                     const {article, main_photo_link, name_of_product, barcode} = product
                     return(
-                    <Card style={{ width: '20rem', height: '526px', marginLeft: '70px',  marginTop: '20px' }}>
+                    <Card style={{ width: '20rem', height: '535px', marginLeft: '70px',  marginTop: '20px' }}>
                       <Card.Img variant="top" src={main_photo_link} style={{ width: '120px' }}/>
                       <Card.Body style={{padding: '0'}}>
                         <Card.Title style={{fontWeight: 'bold'}}>{article}</Card.Title>

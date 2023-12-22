@@ -128,7 +128,7 @@ const useOrderService = () => {
         const unixDateFrom = getNewDate(dateFrom)
         const unixDateTo = getNewDate(dateTo)
         const res = await request(`https://suppliers-api.wildberries.ru/api/v3/orders?limit=50&next=0&dateFrom=${unixDateFrom}&dateTo=${unixDateTo}`, 'GET', null, headersWB);
-            console.log(res)
+         
         return res.orders
     }
 

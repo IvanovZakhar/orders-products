@@ -27,8 +27,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
 
     useEffect(() => {  
         const handleScan = (e) => {
-            const scanCode = e.detail.scanCode;
-            console.log(scanCode)
+            const scanCode = e.detail.scanCode; 
             if(scanCode === 'orders111'){
                 window.location.href = `/table` 
               }else if(scanCode === 'ref111'){
@@ -55,8 +54,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
     }, [props])
 
 
-    useEffect(()=>{
-       console.log(orders)
+    useEffect(()=>{ 
         if(orders.length){
             setDataOrders(orders)
         }else{
@@ -64,14 +62,12 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
         }
     }, [orders])
            
-           
-console.log(company)
+            
     useEffect(() => { 
 
         const handleScan = (e) => {
             const scanCode = e.detail.scanCode;
-            setBarcode(scanCode);
-            console.log(e.detail.scanCode);
+            setBarcode(scanCode); 
             if (scanCode === 'SEND111') { 
               updateProductQuantity({ comment: `${numberPosting}`, productsToUpdate: newOrders })
                 .then((res) => { 
@@ -158,14 +154,12 @@ console.log(company)
         const allSuccess = newOrders.length ? newOrders.every((order) => order.success === true) : false
        
         if (allSuccess) {
-        // Выполняем нужное действие, так как все элементы имеют success: true
-        console.log("Все элементы имеют success: true");
+        // Выполняем нужное действие, так как все элементы имеют success: true 
         setModalOpen(true)
         }
     }, [newOrders])
     
- 
-    console.log(newOrders)
+  
 
      
     const elem = props ? ( ) => {
@@ -174,10 +168,8 @@ console.log(company)
              Column17, Column18, Column19, Column20, Column22, 
              Column23, Column24, Column25, Station, article, 
              date, eyelet, height, loops, name, number_of_roll, postingNumber,
-            price, roll, screws, weight, width, Column21, quantity, photo} = props[0];
-
-        const packed = logs.length ? logs.find(log => log.comment === postingNumber) : null
-        console.log(packed)
+            price, roll, screws, weight, width, Column21, quantity, photo} = props[0]; 
+        const packed = logs.length ? logs.find(log => log.comment == postingNumber) : null 
 
         return (
             <div className='main-table'>

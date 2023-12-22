@@ -104,11 +104,7 @@ weekAgo.setDate(currentDate.getDate() - 7);
 // Дата неделю вперед
 const weekLater = new Date();
 weekLater.setDate(currentDate.getDate() + 7);
-
-// Выводим результаты
-console.log('Неделя назад:', weekAgo.toISOString().split('T')[0]);
-console.log('Сегодня:', currentDate.toISOString().split('T')[0]);
-console.log('Неделя вперед:', weekLater.toISOString().split('T')[0]);
+ 
 
 getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(setAllOrdersWB)
   }, [])
@@ -117,8 +113,7 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
     const key = {
       'Client-Id': localStorage.clientId,
       'Api-Key': localStorage.apiKey
-    };
-    console.log(key)
+    }; 
     getAllOrders(formData, key).then(setAllOrders)
     getAllLogs().then(setLogs)
   }, [])
@@ -134,26 +129,14 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
    };
 
     const onLoadingProduct = (barcode) => { 
-      const res = orders.map(order => {
-        const filtRes = logs.find(log => log.comment === order.postingNumber)
-         if(filtRes){
-          return{
-            ...order, packed: true
-          }
-         }else{
-          return order
-         }
-         
-      })
-      setAllOrders(res)
-      console.log(barcode)
+  
+ 
       if(barcode.slice(0, 3) !== 'OZN' && barcode.slice(0,3) !== 'ЩЯТ' && barcode !== '1110011' && barcode.slice(0, 2) !== 'WB'){
           const formData = JSON.stringify({
             "barcode": `${barcode}`
         });
         
-        const arr = [];
-        console.log(barcode)
+        const arr = []; 
         productBarcode(formData, arsenal).then(dataProduct => {
         
           const headDelivering = JSON.stringify({
@@ -188,14 +171,13 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
         })
           // Устанавливаем информацию об складе
           getWerehouse(headDelivering, cma).then(data => setWarehouse(data.delivery_method.warehouse)).catch( setWarehouse("Неизвестно"))
-          console.log(dataProduct)
+ 
           // Формируем информацию о заказе
           generateOrderInfo (dataProduct)
           // Устанавливаем информацию о компании
           setCompany('ЦМА')
         })
-        .catch(er =>{  
-          console.log(er)
+        .catch(er =>{   
           productBarcodeYandex(barcode).then(res => {
           
           
@@ -206,8 +188,7 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
           })}
         ))
       }else if(barcode.slice(0, 2) === 'WB'){
-        const order = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2))
-        console.log(order)
+        const order = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2)) 
         generateOrderInfoWB(order)
         setCompany('WB')
       }
@@ -215,16 +196,15 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
 
 
   function generateOrderInfo (dataProduct) {
- 
+    
+    console.log(dataProduct)
     const productsForOrders = productsOrdersBarcode.filter(product => product.article === dataProduct[0].offer_id || dataProduct[0].offerId)
     // После данных взаимодействий в зависимости от результата устанавливаем режим сборщика или не устанавливаем
-    // Так же включая режим сборщика умножаем dataProduct[0].quantity на все quantity в productsForOrders.orders 
-    console.log(productsForOrders)
+    // Так же включая режим сборщика умножаем dataProduct[0].quantity на все quantity в productsForOrders.orders  
     if(productsForOrders.length){   
        const orders = productsForOrders[0].orders.map(order => {
           const elem =  photoProducts.filter(item => item.article === order.article)
-         
-          console.log(elem[0].photo)
+          
           return{...order, 
                 quantity: order.quantity * dataProduct[0].quantity, 
                 counter: 0 , 
@@ -236,8 +216,7 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
     }else{
       setOrders([])
     }
-    const productBarcode = allProducts.filter(item => item.article === dataProduct[0].offer_id)
-    console.log(productBarcode)
+    const productBarcode = allProducts.filter(item => item.article === dataProduct[0].offer_id) 
     productBarcode[0].postingNumber = dataProduct[0].posting_number;
     // productBarcode[0].warehouse = data.warehouse;
     productBarcode[0].quantity = dataProduct[0].quantity
@@ -246,24 +225,21 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
  
     const photo = photoProducts.filter(item => item.article === dataProduct[0].offer_id)
  
-    productBarcode[0].photo = photo[0] ? photo[0].main_photo_link : null
-    console.log(productBarcode)
+    productBarcode[0].photo = photo[0] ? photo[0].main_photo_link : null 
     setProduct([
       productBarcode[0]
     ])
   }
 
   function generateOrderInfoYandex (res) {
- 
+    console.log(res)
     const productsForOrders = productsOrdersBarcode.filter(product => product.article === res.items[0].offerId)
     // После данных взаимодействий в зависимости от результата устанавливаем режим сборщика или не устанавливаем
-    // Так же включая режим сборщика умножаем dataProduct[0].quantity на все quantity в productsForOrders.orders 
-    console.log(productsForOrders)
+    // Так же включая режим сборщика умножаем dataProduct[0].quantity на все quantity в productsForOrders.orders  
     if(productsForOrders.length){   
        const orders = productsForOrders[0].orders.map(order => {
           const elem =  photoProducts.filter(item => item.article === order.article)
-         
-          console.log(elem[0].photo)
+          
           return{...order, 
                 quantity: order.quantity * res.items[0].count, 
                 counter: 0 , 
@@ -291,15 +267,13 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
   }
 
  function generateOrderInfoWB (dataProduct) {
- 
+    console.log(dataProduct)
     const productsForOrders = productsOrdersBarcode.filter(product => product.article === dataProduct[0].article)
     // После данных взаимодействий в зависимости от результата устанавливаем режим сборщика или не устанавливаем
-    // Так же включая режим сборщика умножаем dataProduct[0].quantity на все quantity в productsForOrders.orders 
-    console.log(productsForOrders)
+    // Так же включая режим сборщика умножаем dataProduct[0].quantity на все quantity в productsForOrders.orders  
     if(productsForOrders.length){   
        const orders = productsForOrders[0].orders.map(order => {
-          const elem =  photoProducts.filter(item => item.article === order.article)
-          console.log(elem)
+          const elem =  photoProducts.filter(item => item.article === order.article) 
           return{...order, 
                 quantity: order.quantity * 1, 
                 counter: 0 , 
@@ -310,10 +284,8 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
        setOrders(orders)
     }else{
       setOrders([])
-    }
-    console.log(allProducts)
-    const productBarcode = allProducts.filter(item => item.article === dataProduct[0].article)
-    console.log(productBarcode)
+    } 
+    const productBarcode = allProducts.filter(item => item.article === dataProduct[0].article) 
     productBarcode[0].postingNumber = dataProduct[0].id;
     // productBarcode[0].warehouse = data.warehouse;
     productBarcode[0].quantity = 1
@@ -328,14 +300,15 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
       // Если массив photo пуст, устанавливаем productBarcode[0].photo в null (или что-то другое по умолчанию)
       productBarcode[0].photo = null;
     }
-    
-    console.log(productBarcode);
+     
 
     setProduct([
       productBarcode[0]
     ])
-  }
- console.log(photoProducts)
+  } 
+
+
+ 
   return (
     <BrowserRouter>
       <Routes>

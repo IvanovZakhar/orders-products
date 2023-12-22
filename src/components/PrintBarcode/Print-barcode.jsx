@@ -10,7 +10,7 @@ import Badge from 'react-bootstrap/Badge';
 import onScan from 'onscan.js' 
 import ModalPrint from '../modal/modal-print'; 
 
-const PrintBarcode = () => {
+const PrintBarcode = ({photoProducts}) => {
     const [products, setProducts] = useState([])
     const [productsWB, setProductsWB] = useState([])
     const {getAllProductsWarehouse, printBarcode, getAllProductsWB} = useOrderService()
@@ -155,17 +155,17 @@ const PrintBarcode = () => {
         }}/>;
     };
 
-    const newProducts = products.filter(product => product.article.slice(0, 4) === "ПЛР-")
-
-
+    const newProducts = photoProducts.filter(product =>  product.article.slice(0, 4) === "AR15") 
+    console.log(newProducts)
     return(
        
  
             <Row>
-                 <h1>Выберите штрихкод для ПЕЧАТИ</h1>
+                 {/* <h1>Выберите штрихкод для ПЕЧАТИ</h1> */}
                  <ModalPrint modalOpen={modalOpen} setModalOpen={setModalOpen} photo={photo} printName={printName}/>
                   {newProducts.map(product => {
-                    const {article, main_photo_link, name_of_product, barcode} = product
+                    const {article, main_photo_link, name_of_product, barcode_serial_number_ean } = product 
+                    let barcode = barcode_serial_number_ean 
                     return(
                     <Card style={{ width: '20rem', height: '535px', marginLeft: '70px',  marginTop: '20px' }}>
                       <Card.Img variant="top" src={main_photo_link} style={{ width: '120px' }}/>

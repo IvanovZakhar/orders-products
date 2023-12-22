@@ -119,24 +119,9 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
       'Api-Key': localStorage.apiKey
     };
     console.log(key)
-    getAllOrders(formData, key).then(orders => { 
-      getAllLogs().then(logs => {
-        setLogs(logs)
-        const res = orders.map(order => {
-          const filtRes = logs.find(log => log.comment === order.postingNumber)
-           if(filtRes){
-            return{
-              ...order, packed: true
-            }
-           }else{
-            return order
-           }
-           
-        })
-        setAllOrders(res)
-      })
-})
-  }, [localStorage.clientId])
+    getAllOrders(formData, key).then(setAllOrders)
+    getAllLogs().then(setLogs)
+  }, [])
  
 
   useEffect(() => {
@@ -149,6 +134,18 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
    };
 
     const onLoadingProduct = (barcode) => { 
+      const res = orders.map(order => {
+        const filtRes = logs.find(log => log.comment === order.postingNumber)
+         if(filtRes){
+          return{
+            ...order, packed: true
+          }
+         }else{
+          return order
+         }
+         
+      })
+      setAllOrders(res)
       console.log(barcode)
       if(barcode.slice(0, 3) !== 'OZN' && barcode.slice(0,3) !== 'ЩЯТ' && barcode !== '1110011' && barcode.slice(0, 2) !== 'WB'){
           const formData = JSON.stringify({
@@ -293,7 +290,7 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
       ])
   }
 
-  function generateOrderInfoWB (dataProduct) {
+ function generateOrderInfoWB (dataProduct) {
  
     const productsForOrders = productsOrdersBarcode.filter(product => product.article === dataProduct[0].article)
     // После данных взаимодействий в зависимости от результата устанавливаем режим сборщика или не устанавливаем
@@ -302,8 +299,7 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
     if(productsForOrders.length){   
        const orders = productsForOrders[0].orders.map(order => {
           const elem =  photoProducts.filter(item => item.article === order.article)
-         
-          console.log(elem[0].photo)
+          console.log(elem)
           return{...order, 
                 quantity: order.quantity * 1, 
                 counter: 0 , 
@@ -324,15 +320,22 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
     productBarcode[0].date = `Не указан`
     // productBarcode[0].quantity = dataProduct.products[0].quantity;
  
-    const photo = photoProducts.filter(item => item.article === dataProduct[0].article)
- 
-    productBarcode[0].photo = photo[0] ? photo[0].main_photo_link : null
-    console.log(productBarcode)
+    const photo = photoProducts.filter(item => item.article === dataProduct[0].article);
+
+    if (photo.length > 0) {
+      productBarcode[0].photo = photo[0].main_photo_link;
+    } else {
+      // Если массив photo пуст, устанавливаем productBarcode[0].photo в null (или что-то другое по умолчанию)
+      productBarcode[0].photo = null;
+    }
+    
+    console.log(productBarcode);
+
     setProduct([
       productBarcode[0]
     ])
   }
- 
+ console.log(photoProducts)
   return (
     <BrowserRouter>
       <Routes>
@@ -350,7 +353,7 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
                                          orders={orders} 
                                         logs={logs}/>} /> 
         <Route path="/adding-products" element={ <AddingProducts products={productsWarehouse}/>} /> 
-        <Route path="/print-barcode" element={ <PrintBarcode />} /> 
+        <Route path="/print-barcode" element={ <PrintBarcode photoProducts={photoProducts}/>} /> 
         <Route path="/update-status-warehouse" element={ <UpdateStatusWarehouse photoProducts={productsWarehouse}/>} /> 
         <Route path="/list-order" element={<ListOrder 
                                                     props={allOrders} 

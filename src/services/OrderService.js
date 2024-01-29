@@ -23,9 +23,11 @@ const useOrderService = () => {
         return res.result.products
     }
 
-    const productBarcodeYandex = async (barcode) => {  
-       if(barcode.length <= 10){
-        const res = await request(`${_url}/yandex-barcode/${barcode}`, 'GET', null); 
+    const productBarcodeYandex = async (barcode) => {   
+       if(barcode.length <= 10){ 
+        console.log('send')
+        const res = await request(`${_url}/yandex-barcode/${barcode}`, 'GET', null);  
+        console.log(res)
         return res.order
        }
     }
@@ -132,6 +134,12 @@ const useOrderService = () => {
         return res.orders
     }
 
+    const getAllOrdersYandex = async () => { 
+      
+        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/yandex-orders`, 'GET');
+         
+        return res.orders
+    }
     
 
     function getNewDate (date) {
@@ -240,7 +248,8 @@ const useOrderService = () => {
             updateWarehouseOrderStatus,
             getAllLogs,
             getAllProductsWB,
-            getAllOrdersWB }
+            getAllOrdersWB, 
+            getAllOrdersYandex }
 
 }
 

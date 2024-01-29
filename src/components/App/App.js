@@ -34,17 +34,18 @@ function App() {
         getProductsForOrdersBarcode,
         getAllOrders,
         getAllLogs,
-        getAllOrdersWB} = useOrderService();
+        getAllOrdersWB,
+        getAllOrdersYandex, clearError} = useOrderService();
   const [allProducts, setAllProducts] = useState([])
   const [photoProducts, setPhotoProducts] = useState([])
   const [productsWarehouse, setProductsWarehouse] = useState([])
   const [productsOrdersBarcode, setProductsOrdersBarcode] = useState([])
- 
+  const [allOrdersYandex, setAllOrdersYandex] = useState([])
 
   
   useEffect(() => {
     getAllProductsWarehouse().then(setProductsWarehouse)
-    
+    getAllOrdersYandex().then(setAllOrdersYandex)
 }, [])
  
   
@@ -89,34 +90,58 @@ function App() {
 })
 
   // Устанавливаем продукты для нарядов с базы
-  useEffect(() => {
+useEffect(() => {
     
     getInfoProducts().then(setAllProducts) 
     getPhotoProducts().then(setPhotoProducts) 
     getProductsForOrdersBarcode().then(setProductsOrdersBarcode)
     // Получаем текущую дату
-const currentDate = new Date();
+    const currentDate = new Date();
 
-// Дата неделю назад
-const weekAgo = new Date();
-weekAgo.setDate(currentDate.getDate() - 7);
+    // Дата неделю назад
+    const weekAgo = new Date();
+    weekAgo.setDate(currentDate.getDate() - 7);
 
-// Дата неделю вперед
-const weekLater = new Date();
-weekLater.setDate(currentDate.getDate() + 7);
- 
+    // Дата неделю вперед
+    const weekLater = new Date();
+    weekLater.setDate(currentDate.getDate() + 7);
+    
 
-getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(setAllOrdersWB)
+    getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(setAllOrdersWB)
   }, [])
  
   useEffect(()=> {
     const key = {
       'Client-Id': localStorage.clientId,
       'Api-Key': localStorage.apiKey
-    }; 
-    getAllOrders(formData, key).then(setAllOrders)
-    getAllLogs().then(setLogs)
-  }, [])
+    };
+
+    console.log(localStorage.nameCompany)
+    if(localStorage.nameCompany === 'Яндекс'){
+      console.log(localStorage.nameCompany)
+      getAllOrdersYandex().then(setAllOrdersYandex)
+    }else{
+      getAllOrders(formData, key).then(orders => { 
+        getAllLogs().then(logs => {
+          setLogs(logs)
+          const res = orders.map(order => {
+            const filtRes = logs.find(log => log.comment === order.postingNumber)
+            if(filtRes){
+              return{
+                ...order, packed: true
+              }
+            }else{
+              return order
+            }
+
+          })
+          setAllOrders(res)
+        })
+  })
+    }
+  
+       
+  }, [localStorage.clientId])
  
 
   useEffect(() => {
@@ -177,15 +202,19 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
           // Устанавливаем информацию о компании
           setCompany('ЦМА')
         })
-        .catch(er =>{   
-          productBarcodeYandex(barcode).then(res => {
+        .catch(er =>{    
           
-          
-            generateOrderInfoYandex (res)
+          const res = allOrdersYandex.filter(item => item.id == barcode)
+      
+          if(res.length){
+            clearError()
+            console.log(res)
+            generateOrderInfoYandex (res[0])
                 setCompany('Яндекс')
-          
-          
-          })}
+          }
+    
+
+        }
         ))
       }else if(barcode.slice(0, 2) === 'WB'){
         const order = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2)) 
@@ -231,9 +260,8 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
     ])
   }
 
-  function generateOrderInfoYandex (res) {
-    console.log(res)
-    const productsForOrders = productsOrdersBarcode.filter(product => product.article === res.items[0].offerId)
+  function generateOrderInfoYandex (res) { 
+    const productsForOrders = productsOrdersBarcode.filter(product => product.article === res.items[0].offerId) 
     // После данных взаимодействий в зависимости от результата устанавливаем режим сборщика или не устанавливаем
     // Так же включая режим сборщика умножаем dataProduct[0].quantity на все quantity в productsForOrders.orders  
     if(productsForOrders.length){   
@@ -251,16 +279,15 @@ getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().spli
     }else{
       setOrders([])
     }
-    const productBarcode = allProducts.filter(item => item.article === res.items[0].offerId)
-      
+    const productBarcode = allProducts.filter(item => item.article === res.items[0].offerId) 
     productBarcode[0].postingNumber = res.id; 
     productBarcode[0].quantity = res.items[0].count
     productBarcode[0].date = res.delivery.shipments[0].shipmentDate 
     productBarcode[0].warehouse = 'Яндекс' 
       const photo = photoProducts.filter(item => item.article === res.items[0].offerId)
-
+      
       productBarcode[0].photo = photo[0] ? photo[0].main_photo_link : null
-     
+      console.log(productBarcode)
       setProduct([
         productBarcode[0]
       ])

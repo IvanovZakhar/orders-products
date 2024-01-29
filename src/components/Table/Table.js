@@ -161,7 +161,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
     
   
 
-     
+      
     const elem = props ? ( ) => {
          
         const {Column14, Column15, Column16, 
@@ -352,7 +352,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
             </tr>
 
             <NavLink date={date} setDate={setDate}  />
-            {error ? <h4>Штрихкод товара не найден</h4> : loading ? <GetSpinner/> : Order}  
+            {  loading ? <GetSpinner/> : Order}  
             <ModalSend modalOpen={modalOpen}  setModalOpen={setModalOpen}/>
             <ModalStatus modalStatusOpen={modalStatusOpen} setStatusModalOpen={setStatusModalOpen} status={status}/>
         </>

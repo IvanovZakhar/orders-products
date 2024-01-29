@@ -155,7 +155,7 @@ const PrintBarcode = ({photoProducts}) => {
         }}/>;
     };
 
-    const newProducts = photoProducts.filter(product =>  product.article.slice(0, 4) === "AR15") 
+    const newProducts = photoProducts.filter(product =>  product.article.slice(0, 4) === "AR48") 
     console.log(newProducts)
     return(
        

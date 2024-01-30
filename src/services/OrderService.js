@@ -123,14 +123,11 @@ const useOrderService = () => {
     }
  
     const getAllOrdersWB = async (dateFrom, dateTo, apiKey) => { 
-        const headersWB = {  
-            "Authorization": `${apiKey}`,
-            "Content-Type": "application/json"
-         } 
+      
         const unixDateFrom = getNewDate(dateFrom)
         const unixDateTo = getNewDate(dateTo)
-        const res = await request(`https://suppliers-api.wildberries.ru/api/v3/orders?limit=50&next=0&dateFrom=${unixDateFrom}&dateTo=${unixDateTo}`, 'GET', null, headersWB);
-         
+        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/wb-orders/${unixDateFrom}/${unixDateTo}`, 'GET', null );
+         console.log(res)
         return res.orders
     }
 

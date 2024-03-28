@@ -10,7 +10,7 @@ import Badge from 'react-bootstrap/Badge';
 import onScan from 'onscan.js' 
 import ModalPrint from '../modal/modal-print'; 
 
-const PrintBarcode = ({photoProducts}) => {
+const PrintBarcode = ({photoProducts, productsWarehouse}) => {
     const [products, setProducts] = useState([])
     const [productsWB, setProductsWB] = useState([])
     const {getAllProductsWarehouse, printBarcode, getAllProductsWB} = useOrderService()
@@ -155,30 +155,40 @@ const PrintBarcode = ({photoProducts}) => {
         }}/>;
     };
 
-    const newProducts = photoProducts.filter(product =>  product.article.slice(0, 4) === "AR48") 
-    console.log(newProducts)
+    const newProducts = productsWarehouse.filter(product => {
+      switch(product.article) {
+        case 'AR18V7128H9-06':   
+          return product
+      
+        case 'AR18V7158H9-06':   
+          return product 
+        
+      }
+    }) 
     return(
        
  
             <Row>
                  {/* <h1>Выберите штрихкод для ПЕЧАТИ</h1> */}
                  <ModalPrint modalOpen={modalOpen} setModalOpen={setModalOpen} photo={photo} printName={printName}/>
-                  {newProducts.map(product => {
-                    const {article, main_photo_link, name_of_product, barcode_serial_number_ean } = product 
-                    let barcode = barcode_serial_number_ean 
-                    return(
-                    <Card style={{ width: '20rem', height: '535px', marginLeft: '70px',  marginTop: '20px' }}>
-                      <Card.Img variant="top" src={main_photo_link} style={{ width: '120px' }}/>
-                      <Card.Body style={{padding: '0'}}>
-                        <Card.Title style={{fontWeight: 'bold'}}>{article}</Card.Title>
-                        <Card.Title>{name_of_product.slice(0, 100)}</Card.Title>
-                        Штрихкод
-                        <Barcode barcodeOrders={barcode}/>
-                        Наклейка
-                        <Barcode barcodeOrders={`BAR${barcode.slice(3, 13)}`}/>
-                      </Card.Body>
-                     </Card>
-                    )
+                  {newProducts.map((product, i) => {
+                    const {article, main_photo_link, name_of_product, barcode} = product 
+                  
+                  
+                      return(
+                        <Card style={{ width: '20rem', height: '535px', marginLeft: '70px',  marginTop: '20px' }}>
+                          <Card.Img variant="top" src={main_photo_link} style={{ width: '120px' }}/>
+                          <Card.Body style={{padding: '0'}}>
+                            <Card.Title style={{fontWeight: 'bold'}}>{article}</Card.Title>
+                            <Card.Title>{name_of_product.slice(0, 100)}</Card.Title>
+                            Штрихкод
+                            <Barcode barcodeOrders={barcode}/>
+                            Наклейка
+                            <Barcode barcodeOrders={`BAR${barcode.slice(3, 13)}`}/>
+                          </Card.Body>
+                         </Card>
+                        )
+                    
                   })
                     
                   }

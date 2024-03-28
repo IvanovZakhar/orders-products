@@ -9,8 +9,7 @@ import Button from 'react-bootstrap/Button';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import './Nav-link.scss';
 
-const NavLink = ( {onLoadingProducts, getLabels, labels, setName} ) => {
-  
+const NavLink = ( {onLoadingProducts, getLabels, labels, setName} ) => { 
   const [show, setShow] = useState(false);
   // const [dateNav, setNavDate] = useState()
 
@@ -19,8 +18,7 @@ const NavLink = ( {onLoadingProducts, getLabels, labels, setName} ) => {
     
   const apiData = localStorage.apiData ? JSON.parse(localStorage.apiData) : []
   const deletItem = (i) => { 
-      const newData = apiData.filter(item => item.id !== i)
-      console.log(newData)
+      const newData = apiData.filter(item => item.id !== i) 
       localStorage.apiData = JSON.stringify(newData) 
   }
   const setApiData = (item) => {
@@ -111,8 +109,7 @@ const NavLink = ( {onLoadingProducts, getLabels, labels, setName} ) => {
                     <Form.Control type="text" placeholder="Api-key" />
                   </Form.Group>
 
-                  <Button variant="primary"  onClick={(e) => {
-                    console.log(e)
+                  <Button variant="primary"  onClick={(e) => { 
                     onLoadingProducts()}} type='submit'>
                     Submit
                   </Button>

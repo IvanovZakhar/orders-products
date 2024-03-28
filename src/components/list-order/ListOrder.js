@@ -22,7 +22,7 @@ const ListOrder = ({props, onLoadingProducts, date, setDate, logs}) => {
       };
 
     const readySort = props ? props.sort(compare) : null
-    
+    console.log(labels)
     const elem = readySort ? readySort.map((item, i) => {
         const {date,
             postingNumber,

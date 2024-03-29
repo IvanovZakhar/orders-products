@@ -126,14 +126,14 @@ const useOrderService = () => {
         const unixDateFrom = getNewDate(dateFrom)
         const unixDateTo = getNewDate(dateTo)
         const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/wb-orders/${unixDateFrom}/${unixDateTo}`, 'GET', null );
-         console.log(res)
+     
         return res.orders
     }
 
-    const getAllOrdersYandex = async () => { 
+    const getAllOrdersYandex = async (companyId) => { 
       
-        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/yandex-orders`, 'GET');
-         
+        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/yandex-orders/${companyId}`, 'GET');
+            console.log(res)
         return res.orders
     }
     

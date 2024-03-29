@@ -45,9 +45,15 @@ function App() {
   
   useEffect(() => {
     getAllProductsWarehouse().then(setProductsWarehouse)
-    getAllOrdersYandex().then(setAllOrdersYandex)
+    getAllOrdersYandex(49023774).then(allOrders => {
+      getAllOrdersYandex(77640946).then(allOrdersLarge => {
+        getAllOrdersYandex(77640946).then(allOrdersComp => {
+          setAllOrdersYandex([...allOrders, ...allOrdersLarge, allOrdersComp])
+        })
+      })
+    })
 }, [])
-  
+ 
 
   // Загрузка переменных среды из файла .env
   const arsenalClientId = process.env.REACT_APP_ARSENAL_CLIENT_ID;
@@ -202,7 +208,7 @@ useEffect(() => {
         .catch(er =>{    
           
           const res = allOrdersYandex.filter(item => item.id == barcode)
-      
+          console.log(res)
           if(res.length){
             clearError() 
             generateOrderInfoYandex (res[0])

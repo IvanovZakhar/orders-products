@@ -14,7 +14,8 @@ import ModalStatus from '../modal/modal-status';
 import { useBarcode } from 'next-barcode';
  
 
-function Table({props, date, setDate, onLoadingProduct, loading, error, setCompany, company, warehouse, logs}) {
+function Table({props, date, setDate, onLoadingProduct, loading, error, setCompany, company, warehouse, logs, errorTable}) {
+    
     const [barcode, setBarcode] = useState('');
     const [onScanInitialized, setOnScanInitialized] = useState(false) 
     const [addedOrdersBarcode, setAddedOrdersBarcode] = useState([]) 
@@ -25,12 +26,10 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
     const [numberPosting, setNumberPosting] = useState('')
     const [newOrders,  setNewDataOrders] = useState([])
     const [status, setStatus] = useState('')
-    const [modalStatusOpen, setStatusModalOpen] = useState(false);
-    console.log(props)
+    const [modalStatusOpen, setStatusModalOpen] = useState(false); 
     useEffect(() => {  
         const handleScan = (e) => {
-            const scanCode = e.detail.scanCode; 
-            console.log(scanCode)
+            const scanCode = e.detail.scanCode;  
             if(scanCode === 'orders111'){
                 window.location.href = `/table` 
               }else if(scanCode === 'ref111'){
@@ -39,12 +38,10 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
                   window.location.href = `/update-status-warehouse`
               }else if(scanCode === 'print111' ){
                 window.location.href = '/print-barcode'
-              }else if(scanCode === 'swipebot111'){
-                console.log('swipe')
+              }else if(scanCode === 'swipebot111'){ 
                 window.scrollTo({ top: window.scrollY + 1970, behavior: 'smooth' });
 
-              }else if(scanCode === 'swipetop111'){
-                console.log('swipe')
+              }else if(scanCode === 'swipetop111'){ 
                 window.scrollTo({ top: window.scrollY - 1970, behavior: 'smooth' });
 
 
@@ -66,8 +63,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
     }, [props])
 
 
-    useEffect(()=>{ 
-        console.log(props)
+    useEffect(()=>{  
         if(props.length && props[0].orders.length){
             const allOrders = props.flatMap(prop => prop.orders);
 
@@ -92,7 +88,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
                // Задержка перед перезагрузкой страницы
                 setTimeout(() => {
                     window.location.reload();
-                }, 3000);
+                }, 1500);
               }).catch(er => {
                 setModalOpen(false)
                 setStatusModalOpen(true)
@@ -132,12 +128,10 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
         return () => {
         document.removeEventListener('scan', handleScan);
         };
-    }, [newOrders]); 
-        console.log(newOrders)
+    }, [newOrders]);  
  
  
-    useEffect(() => {
-        console.log(dataOrders)
+    useEffect(() => { 
         const updateData = dataOrders.map(order => {
             if(order.quantity === order.counter){
                 return{
@@ -148,8 +142,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
             return order
         })
         setNewDataOrders(updateData)
-    }, [dataOrders])
-      console.log(dataOrders)
+    }, [dataOrders]) 
         
 
     useEffect(() => {
@@ -198,8 +191,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
       
     const elem = props ? ( ) => {
          
-        return props.map((prop) => {
-            console.log(props)
+        return props.map((prop) => { 
             const {Column14, Column15, Column16, 
                 Column17, Column18, Column19, Column20, Column22, 
                 Column23, Column24, Column25, Station, article, 
@@ -371,7 +363,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
     }: null;
 
  
-     const Order = elem ? elem() : <h4>Введите штрихкод</h4> 
+     const Order = errorTable ? <h4>{errorTable}</h4> : elem ? elem() : <h4>Введите штрихкод</h4> 
     return (
         <>  
             <h5 onClick={() => {setBarcode('400175596448000')}}>{company}</h5>

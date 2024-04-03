@@ -20,6 +20,7 @@ function App() {
   const [allOrders, setAllOrders] = useState([])
   const [allOrdersWB, setAllOrdersWB] = useState([])
   const [logs, setLogs] = useState([])
+  const [errorTable, setErrorTable] = useState(null)
   const {getInfoProducts, 
         getBaskets, 
         getAllProducts, 
@@ -35,13 +36,15 @@ function App() {
         getAllOrders,
         getAllLogs,
         getAllOrdersWB,
+        getAllOrdersOZN,
         getAllOrdersYandex, clearError} = useOrderService();
   const [allProducts, setAllProducts] = useState([])
   const [photoProducts, setPhotoProducts] = useState([])
   const [productsWarehouse, setProductsWarehouse] = useState([])
   const [productsOrdersBarcode, setProductsOrdersBarcode] = useState([])
   const [allOrdersYandex, setAllOrdersYandex] = useState([])
-
+  const [ordersOzn, setOrdersOzn] = useState([])
+ 
   
   useEffect(() => {
     getAllProductsWarehouse().then(setProductsWarehouse)
@@ -52,9 +55,31 @@ function App() {
         })
       })
     })
-}, [])
- 
 
+    JSON.parse(localStorage.getItem('apiData')).forEach(item => {
+      const headersOzn = {  
+          'Client-Id': `${item.clientId}` ,
+          'Api-Key': `${item.apiKey}`
+       } 
+       console.log(item.clientId)
+       getAllOrdersOZN(headersOzn).then(data => {
+          if(item.clientId == 634359){
+            const ordersArsenal = data.map(item => {return {...item, company: 'Арсенал'}})
+            setOrdersOzn(prevOzn => {
+              return[...prevOzn, ...ordersArsenal]
+              
+          })
+          }else if(item.clientId == 611694){
+            const ordersCma = data.map(item => {return {...item, company: 'ЦМА'}})
+            setOrdersOzn(prevOzn => {
+              return[...prevOzn, ...ordersCma]
+              
+          })
+          }
+       })
+  })
+}, [])  
+ 
   // Загрузка переменных среды из файла .env
   const arsenalClientId = process.env.REACT_APP_ARSENAL_CLIENT_ID;
   const arsenalApiKey = process.env.REACT_APP_ARSENAL_API_KEY;
@@ -165,105 +190,111 @@ useEffect(() => {
         });
         
         const arr = []; 
-        productBarcode(formData, arsenal).then(dataProduct => {
+   
+           
         
-          const headDelivering = JSON.stringify({
-            "posting_number":  `${dataProduct[0].posting_number}`,
-            "with": {
-                "analytics_data": false,
-                "barcodes": false,
-                "financial_data": false,
-                "product_exemplars": false,
-                "translit": false
-            }
-        })
-            // Устанавливаем информацию об складе
-            getWerehouse(headDelivering, arsenal).then(data => setWarehouse(data.delivery_method.warehouse)).catch( setWarehouse("Неизвестно"))
-            // Формируем информацию о заказе
-            generateOrderInfo (dataProduct)
-            // Устанавливаем информацию о компании
-            setCompany('АрсеналЪ') 
-        }).catch( 
-          productBarcode(formData, cma).then(dataProduct => {
-    
-    
-          const headDelivering = JSON.stringify({
-            "posting_number":  `${dataProduct[0].posting_number}`,
-            "with": {
-                "analytics_data": false,
-                "barcodes": false,
-                "financial_data": false,
-                "product_exemplars": false,
-                "translit": false
-            }
-        })
-          // Устанавливаем информацию об складе
-          getWerehouse(headDelivering, cma).then(data => setWarehouse(data.delivery_method.warehouse)).catch( setWarehouse("Неизвестно"))
- 
-          // Формируем информацию о заказе
-          generateOrderInfo (dataProduct)
-          // Устанавливаем информацию о компании
-          setCompany('ЦМА')
-        })
-        .catch(er =>{    
           
-          const res = allOrdersYandex.filter(item => item.id == barcode)
-          console.log(res)
-          if(res.length){
-            clearError() 
-            generateOrderInfoYandex (res[0])
-                setCompany('Яндекс')
-          }
-    
-
+          const resYandex = allOrdersYandex.filter(item => item.id == barcode) 
+          const resOzn = ordersOzn.filter(item => item.barcode == barcode)
+          console.log(resOzn)
+        if(resYandex.length){ 
+            setErrorTable(null)
+            generateOrderInfoYandex (resYandex[0])
+            setCompany('Яндекс')
+        }else if(barcode.slice(0, 2) === 'WB'){ 
+            setErrorTable(null)
+            const order = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2)) 
+            generateOrderInfoWB(order)
+            setCompany('WB') 
+        }else if (resOzn.length){
+          setErrorTable(null)
+          generateOrderInfo(resOzn)
+          setCompany(resOzn[0].company) 
+        }else{
+          setErrorTable('Штрихкод не найден')
         }
-        ))
-      }else if(barcode.slice(0, 2) === 'WB'){ 
-        const order = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2)) 
-        generateOrderInfoWB(order)
-        setCompany('WB')
-      }
-  }; 
+       
+  }
+}
 
 
-  // function generateOrderInfo (dataProduct) { 
-  //   const productsForOrders = productsOrdersBarcode.filter(product => product.article === dataProduct[0].offer_id || dataProduct[0].offerId)
-  //   // После данных взаимодействий в зависимости от результата устанавливаем режим сборщика или не устанавливаем
-  //   // Так же включая режим сборщика умножаем dataProduct[0].quantity на все quantity в productsForOrders.orders  
-  //   if(productsForOrders.length){   
-  //      const orders = productsForOrders[0].orders.map(order => {
-  //         const elem =  photoProducts.filter(item => item.article === order.article)
-          
-  //         return{...order, 
-  //               quantity: order.quantity * dataProduct[0].quantity, 
-  //               counter: 0 , 
-  //               success: false, 
-  //               main_photo_link: elem.length ?  elem[0].main_photo_link : null,
-  //               name_of_product: elem.length ?  elem[0].name_of_product : null}
-  //      })
-  //      setOrders(orders)
-  //   }else{
-  //     setOrders([])
-  //   }
-  //   const productBarcode = allProducts.filter(item => item.article === dataProduct[0].offer_id) 
-  //   productBarcode[0].postingNumber = dataProduct[0].posting_number;
-  //   // productBarcode[0].warehouse = data.warehouse;
-  //   productBarcode[0].quantity = dataProduct[0].quantity
-  //   productBarcode[0].date = `${dataProduct[0].shipment_date.slice(8, 10)}.${dataProduct[0].shipment_date.slice(5, 7)}.${dataProduct[0].shipment_date.slice(0, 4)}`
-  //   // productBarcode[0].quantity = dataProduct.products[0].quantity;
+
+//   const onLoadingProduct = (barcode) => { 
+  
  
-  //   const photo = photoProducts.filter(item => item.article === dataProduct[0].offer_id)
+//     if(barcode.slice(0, 3) !== 'OZN' && barcode.slice(0,3) !== 'ЩЯТ' && barcode !== '1110011' && barcode.slice(0, 2) !== 'WB'){
+//         const formData = JSON.stringify({
+//           "barcode": `${barcode}`
+//       });
+      
+//       const arr = []; 
+//       productBarcode(formData, arsenal).then(dataProduct => {
+      
+//         const headDelivering = JSON.stringify({
+//           "posting_number":  `${dataProduct[0].posting_number}`,
+//           "with": {
+//               "analytics_data": false,
+//               "barcodes": false,
+//               "financial_data": false,
+//               "product_exemplars": false,
+//               "translit": false
+//           }
+//       })
+//           // Устанавливаем информацию об складе
+//           getWerehouse(headDelivering, arsenal).then(data => setWarehouse(data.delivery_method.warehouse)).catch( setWarehouse("Неизвестно"))
+//           // Формируем информацию о заказе
+//           generateOrderInfo (dataProduct)
+//           console.log(dataProduct)
+//           // Устанавливаем информацию о компании
+//           setCompany('АрсеналЪ') 
+//       }).catch( 
+//         productBarcode(formData, cma).then(dataProduct => {
+  
+  
+//         const headDelivering = JSON.stringify({
+//           "posting_number":  `${dataProduct[0].posting_number}`,
+//           "with": {
+//               "analytics_data": false,
+//               "barcodes": false,
+//               "financial_data": false,
+//               "product_exemplars": false,
+//               "translit": false
+//           }
+//       })
+//         // Устанавливаем информацию об складе
+//         getWerehouse(headDelivering, cma).then(data => setWarehouse(data.delivery_method.warehouse)).catch( setWarehouse("Неизвестно"))
+
+//         // Формируем информацию о заказе
+//         generateOrderInfo (dataProduct)
+//         // Устанавливаем информацию о компании
+//         setCompany('ЦМА')
+//       })
+//       .catch(er =>{    
+        
+//         const res = allOrdersYandex.filter(item => item.id == barcode) 
+//         if(res.length){
+//           clearError() 
+//           generateOrderInfoYandex (res[0])
+//               setCompany('Яндекс')
+//         }
+  
+
+//       }
+//       ))} else if(barcode.slice(0, 2) === 'WB'){ 
+//       const order = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2)) 
+//       generateOrderInfoWB(order)
+//       setCompany('WB')
+//     }
+// }; 
+
  
-  //   productBarcode[0].photo = photo[0] ? photo[0].main_photo_link : null 
-  //   setProduct([
-  //     productBarcode[0]
-  //   ])
-  // }
+
 
   function generateOrderInfo(dataProductList) {
+    console.log(dataProductList)
     const productMap = new Map(allProducts.map(product => [product.article, product]));
     const photoMap = new Map(photoProducts.map(photo => [photo.article, photo]));
-  
+    console.log(dataProductList)
     const updatedProductBarcodes = dataProductList.map(dataProduct => {
       const offerId = dataProduct.offer_id || dataProduct.offerId;
       const productsForOrders = productsOrdersBarcode.filter(p => p.article === offerId);
@@ -283,8 +314,7 @@ useEffect(() => {
             };
           })
         );
-      }
-      console.log(combinedOrders)
+      }  
       const product = productMap.get(offerId);
       if (product) {
         product.postingNumber = dataProduct.posting_number;
@@ -316,8 +346,7 @@ useEffect(() => {
     const productBarcode = res.items.map((item, i) => {
       const product = productMap.get(item.offerId);
       const photo = photoMap.get(item.offerId); 
-      const filteredOrders = productsOrdersBarcode.filter(p => p.article === item.offerId);
-      console.log(filteredOrders)
+      const filteredOrders = productsOrdersBarcode.filter(p => p.article === item.offerId); 
       const orders = filteredOrders.length ? 
         filteredOrders.flatMap(({ orders }) => orders.map(order => ({
           ...order,
@@ -344,8 +373,7 @@ useEffect(() => {
   
  
   function generateOrderInfoWB(dataProduct) {  
-    const productsForOrders = productsOrdersBarcode.filter(product => product.article === dataProduct[0].article);
-  console.log(dataProduct)
+    const productsForOrders = productsOrdersBarcode.filter(product => product.article === dataProduct[0].article); 
     // Количество для умножения = dataProduct[0].quantity, если есть productsForOrders
     const multiplier = 1
   
@@ -396,7 +424,9 @@ useEffect(() => {
                                          company={company}
                                          warehouse={warehouse}
                                          orders={orders} 
-                                        logs={logs}/>} /> 
+                                        logs={logs}
+                                        errorTable={errorTable}/>
+                                        } /> 
         <Route path="/adding-products" element={ <AddingProducts products={productsWarehouse}/>} /> 
         <Route path="/print-barcode" element={ <PrintBarcode photoProducts={photoProducts} productsWarehouse={productsWarehouse}/>} /> 
         <Route path="/update-status-warehouse" element={ <UpdateStatusWarehouse photoProducts={productsWarehouse}/>} /> 

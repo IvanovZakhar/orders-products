@@ -8,6 +8,38 @@ const useOrderService = () => {
         'Client-Id': '' ,
         'Api-Key': ''
      } 
+
+     // Получение текущей даты и времени в Московском времени
+const moscowTime = new Date().toLocaleString('en-US', { timeZone: 'Europe/Moscow' });
+const currentDateTime = new Date(moscowTime);
+const currentFormattedDate = currentDateTime.toISOString().slice(0, 19) + 'Z'; 
+
+// Получение даты и времени через неделю от текущего времени в Московском времени
+const nextWeekDateTime = new Date(currentDateTime);
+nextWeekDateTime.setDate(nextWeekDateTime.getDate() + 10);
+const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z'; 
+
+
+
+     const formDataOZN = JSON.stringify({
+        dir: 'ASC',
+        filter: {
+          cutoff_from: `${currentFormattedDate}`,
+          cutoff_to: `${nextWeekFormattedDate}`,
+          delivery_method_id: [],
+          provider_id: [],
+          status: 'awaiting_deliver',
+          warehouse_id: [],
+        },
+        limit: 1000,
+        offset: 0,
+        with: {
+          analytics_data: true,
+          barcodes: true,
+          financial_data: true,
+          translit: true,
+        }
+    })
  
 
     const getAllOrders = async (formData, headersOzon = headersDef) => {  
@@ -82,7 +114,11 @@ const useOrderService = () => {
     }
 
  
-
+    const getAllOrdersOZN = async (headersDef) => {  
+        const res = await request(`https://api-seller.ozon.ru/v3/posting/fbs/unfulfilled/list`, 'POST', formDataOZN, headersDef );  
+        console.log(res)
+        return res.result.postings.map(transformProductOzn)
+    }
 
 
 
@@ -163,6 +199,20 @@ const useOrderService = () => {
         } 
      }
 
+     const transformProductOzn = (product) => {
+        
+        return{
+            posting_number: product.posting_number,
+            shipment_date: product.shipment_date,
+            offer_id: product.products[0].offer_id,
+            name: product.products[0].name,
+            price: product.products[0].price,
+            quantity: product.products[0].quantity,
+            warehouse: product.delivery_method.warehouse,
+            barcode: product.barcodes.upper_barcode 
+        
+        } 
+     }
     
      const updateProducts = async (data) => {
         const res = await request(
@@ -245,7 +295,8 @@ const useOrderService = () => {
             getAllLogs,
             getAllProductsWB,
             getAllOrdersWB, 
-            getAllOrdersYandex }
+            getAllOrdersYandex,
+            getAllOrdersOZN }
 
 }
 

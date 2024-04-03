@@ -157,26 +157,9 @@ const PrintBarcode = ({photoProducts, productsWarehouse}) => {
 
     const newProducts = productsWarehouse.filter(product => {
       switch(product.article) {
-        case 'AR75PQ31007-06':   
+        case 'AR755102957-06':   
           return product
-        case 'AR75PG31007-06':   
-          return product
-        case 'AR751A41007-06':   
-          return product
-        case 'AR751C31007-06':   
-          return product
-        case 'AR18V7128H9-06':   
-          return product
-        case 'AR75PW31007-06':   
-          return product
-        case 'AR75PB31007-06':   
-          return product
-        case 'AR75PY31007-06':   
-          return product 
-        case 'AR75PV31007-06':   
-          return product 
-        case 'AR75PT31007-06':   
-          return product 
+ 
  
       }
     }) 

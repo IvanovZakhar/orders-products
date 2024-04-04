@@ -14,7 +14,7 @@ import ModalStatus from '../modal/modal-status';
 import { useBarcode } from 'next-barcode';
  
 
-function Table({props, date, setDate, onLoadingProduct, loading, error, setCompany, company, warehouse, logs, errorTable}) {
+function Table({props, date, setDate, onLoadingProduct, loading, error, setCompany, warehouse, company,  logs, errorTable}) {
     
     const [barcode, setBarcode] = useState('');
     const [onScanInitialized, setOnScanInitialized] = useState(false) 
@@ -186,9 +186,8 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
             margin: '0 auto',
             textAlign: 'center', 
           }}/>;
-      };
-
-      
+      }; 
+      console.log(props)
     const elem = props ? ( ) => {
          
         return props.map((prop) => { 
@@ -196,7 +195,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
                 Column17, Column18, Column19, Column20, Column22, 
                 Column23, Column24, Column25, Station, article, 
                 date, eyelet, height, loops, name, number_of_roll, postingNumber,
-               price, roll, screws, weight, width, Column21, quantity, photo} = prop; 
+               price, roll, screws, weight, width, Column21, quantity, photo, warehouse} = prop; 
            const packed = logs.length ? logs.find(log => log.comment == postingNumber) : null   
            return (
                <div className='main-table'>

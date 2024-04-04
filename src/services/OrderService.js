@@ -259,7 +259,7 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
         
         const res = await request(`${_url}/logs/products-for-warehouse`, 
                                     'GET')
-    
+        console.log(res)
         return res
     }
     const getAllProductsWB = async () => {

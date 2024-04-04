@@ -80,51 +80,18 @@ function App() {
   })
 }, [])  
  
-  // Загрузка переменных среды из файла .env
-  const arsenalClientId = process.env.REACT_APP_ARSENAL_CLIENT_ID;
-  const arsenalApiKey = process.env.REACT_APP_ARSENAL_API_KEY;
-  const cmaClientId = process.env.REACT_APP_CMA_CLIENT_ID;
-  const cmaApiKey = process.env.REACT_APP_CMA_API_KEY;
-
-  // Далее можно использовать эти переменные в коде
-  const arsenal = {
-    'Client-Id': JSON.parse(localStorage.apiData)[0].clientId,
-    'Api-Key': JSON.parse(localStorage.apiData)[0].apiKey
-  };
-
-  const cma = {
-    'Client-Id': JSON.parse(localStorage.apiData)[1].clientId,
-    'Api-Key': JSON.parse(localStorage.apiData)[1].apiKey
-  }; 
+ 
+ 
 
  
-  
-  const formData = JSON.stringify({
-    dir: 'ASC',
-    filter: {
-      cutoff_from: `${localStorage.data}T00:00:00.000Z`,
-      cutoff_to: `${localStorage.data}T17:00:00Z`,
-      delivery_method_id: [],
-      provider_id: [],
-      status: 'awaiting_deliver',
-      warehouse_id: [],
-    },
-    limit: 100,
-    offset: 0,
-    with: {
-      analytics_data: true,
-      barcodes: true,
-      financial_data: true,
-      translit: true,
-    }
-})
-
+ 
   // Устанавливаем продукты для нарядов с базы
 useEffect(() => {
     
     getInfoProducts().then(setAllProducts) 
     getPhotoProducts().then(setPhotoProducts) 
     getProductsForOrdersBarcode().then(setProductsOrdersBarcode)
+    getAllLogs().then(setLogs) 
     // Получаем текущую дату
     const currentDate = new Date();
 
@@ -140,38 +107,7 @@ useEffect(() => {
     getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(setAllOrdersWB)
   }, [])
  
-  useEffect(()=> {
-    const key = {
-      'Client-Id': localStorage.clientId,
-      'Api-Key': localStorage.apiKey
-    };
- 
-    if(localStorage.nameCompany === 'Яндекс'){ 
-      getAllOrdersYandex().then(setAllOrdersYandex)
-    }else{
-      getAllOrders(formData, key).then(orders => { 
-        getAllLogs().then(logs => {
-          setLogs(logs)
-          const res = orders.map(order => {
-            const filtRes = logs.find(log => log.comment === order.postingNumber)
-            if(filtRes){
-              return{
-                ...order, packed: true
-              }
-            }else{
-              return order
-            }
-
-          })
-          setAllOrders(res)
-        })
-  })
-    }
   
-       
-  }, [localStorage.clientId])
- 
-
   useEffect(() => {
     onLoadingProducts();
   }, [localStorage.data]);
@@ -181,115 +117,34 @@ useEffect(() => {
  
    };
 
-    const onLoadingProduct = (barcode) => { 
-  
- 
-      if(barcode.slice(0, 3) !== 'OZN' && barcode.slice(0,3) !== 'ЩЯТ' && barcode !== '1110011' && barcode.slice(0, 2) !== 'WB'){
-          const formData = JSON.stringify({
-            "barcode": `${barcode}`
-        });
-        
-        const arr = []; 
-   
-           
-        
-          
-          const resYandex = allOrdersYandex.filter(item => item.id == barcode) 
-          const resOzn = ordersOzn.filter(item => item.barcode == barcode)
-          console.log(resOzn)
-        if(resYandex.length){ 
-            setErrorTable(null)
-            generateOrderInfoYandex (resYandex[0])
-            setCompany('Яндекс')
-        }else if(barcode.slice(0, 2) === 'WB'){ 
-            setErrorTable(null)
-            const order = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2)) 
-            generateOrderInfoWB(order)
-            setCompany('WB') 
-        }else if (resOzn.length){
+const onLoadingProduct = (barcode) => {   
+  if(barcode.slice(0, 3) !== 'OZN' && barcode.slice(0,3) !== 'ЩЯТ' && barcode !== '1110011' ){ 
+      const resYandex = allOrdersYandex.filter(item => item.id == barcode) 
+      const resOzn = ordersOzn.filter(item => item.barcode == barcode)
+      const resWB = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2))  
+      if(resYandex.length){ 
           setErrorTable(null)
-          generateOrderInfo(resOzn)
-          setCompany(resOzn[0].company) 
-        }else{
-          setErrorTable('Штрихкод не найден')
-        }
-       
+          generateOrderInfoYandex (resYandex[0])
+          setCompany('Яндекс')
+          setWarehouse('Яндекс')
+      }else if(resWB.length){  
+          setErrorTable(null) 
+          generateOrderInfoWB(resWB)
+          setCompany('WB') 
+          setWarehouse('Уткина заводь')
+      }else if (resOzn.length){
+        setErrorTable(null)
+        generateOrderInfo(resOzn)
+        setCompany(resOzn[0].company) 
+        setWarehouse(resOzn[0].warehouse)
+      }else{
+        setErrorTable('Штрихкод не найден')
+      }
+    
   }
 }
 
-
-
-//   const onLoadingProduct = (barcode) => { 
-  
  
-//     if(barcode.slice(0, 3) !== 'OZN' && barcode.slice(0,3) !== 'ЩЯТ' && barcode !== '1110011' && barcode.slice(0, 2) !== 'WB'){
-//         const formData = JSON.stringify({
-//           "barcode": `${barcode}`
-//       });
-      
-//       const arr = []; 
-//       productBarcode(formData, arsenal).then(dataProduct => {
-      
-//         const headDelivering = JSON.stringify({
-//           "posting_number":  `${dataProduct[0].posting_number}`,
-//           "with": {
-//               "analytics_data": false,
-//               "barcodes": false,
-//               "financial_data": false,
-//               "product_exemplars": false,
-//               "translit": false
-//           }
-//       })
-//           // Устанавливаем информацию об складе
-//           getWerehouse(headDelivering, arsenal).then(data => setWarehouse(data.delivery_method.warehouse)).catch( setWarehouse("Неизвестно"))
-//           // Формируем информацию о заказе
-//           generateOrderInfo (dataProduct)
-//           console.log(dataProduct)
-//           // Устанавливаем информацию о компании
-//           setCompany('АрсеналЪ') 
-//       }).catch( 
-//         productBarcode(formData, cma).then(dataProduct => {
-  
-  
-//         const headDelivering = JSON.stringify({
-//           "posting_number":  `${dataProduct[0].posting_number}`,
-//           "with": {
-//               "analytics_data": false,
-//               "barcodes": false,
-//               "financial_data": false,
-//               "product_exemplars": false,
-//               "translit": false
-//           }
-//       })
-//         // Устанавливаем информацию об складе
-//         getWerehouse(headDelivering, cma).then(data => setWarehouse(data.delivery_method.warehouse)).catch( setWarehouse("Неизвестно"))
-
-//         // Формируем информацию о заказе
-//         generateOrderInfo (dataProduct)
-//         // Устанавливаем информацию о компании
-//         setCompany('ЦМА')
-//       })
-//       .catch(er =>{    
-        
-//         const res = allOrdersYandex.filter(item => item.id == barcode) 
-//         if(res.length){
-//           clearError() 
-//           generateOrderInfoYandex (res[0])
-//               setCompany('Яндекс')
-//         }
-  
-
-//       }
-//       ))} else if(barcode.slice(0, 2) === 'WB'){ 
-//       const order = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2)) 
-//       generateOrderInfoWB(order)
-//       setCompany('WB')
-//     }
-// }; 
-
- 
-
-
   function generateOrderInfo(dataProductList) {
     console.log(dataProductList)
     const productMap = new Map(allProducts.map(product => [product.article, product]));
@@ -310,7 +165,8 @@ useEffect(() => {
               counter: 0,
               success: false,
               main_photo_link: photo ? photo.main_photo_link : null,
-              name_of_product: photo ? photo.name_of_product : null
+              name_of_product: photo ? photo.name_of_product : null, 
+              warehouse: dataProduct.warehouse
             };
           })
         );
@@ -322,7 +178,7 @@ useEffect(() => {
         product.date = `${dataProduct.shipment_date.slice(8, 10)}.${dataProduct.shipment_date.slice(5, 7)}.${dataProduct.shipment_date.slice(0, 4)}`;
         const photo = photoMap.get(offerId);
         product.photo = photo ? photo.main_photo_link : null;
-  
+        
         return {
           ...product,
           orders: combinedOrders
@@ -373,6 +229,7 @@ useEffect(() => {
   
  
   function generateOrderInfoWB(dataProduct) {  
+    console.log(dataProduct)
     const productsForOrders = productsOrdersBarcode.filter(product => product.article === dataProduct[0].article); 
     // Количество для умножения = dataProduct[0].quantity, если есть productsForOrders
     const multiplier = 1
@@ -424,8 +281,8 @@ useEffect(() => {
                                          company={company}
                                          warehouse={warehouse}
                                          orders={orders} 
-                                        logs={logs}
-                                        errorTable={errorTable}/>
+                                         logs={logs}
+                                         errorTable={errorTable}/>
                                         } /> 
         <Route path="/adding-products" element={ <AddingProducts products={productsWarehouse}/>} /> 
         <Route path="/print-barcode" element={ <PrintBarcode photoProducts={photoProducts} productsWarehouse={productsWarehouse}/>} /> 

@@ -11,10 +11,16 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex}) => {
     const [ordersToday, setOrdersToday] = useState([]) 
     const [ordersLargeYandex, setOrdersLargeYandex] = useState([])
     const [ordersYandex, setOrdersYandex] = useState([])
+    const [ordersCMATomorrow , setOrdersCMATomorrow ] = useState([])
+    const [ordersArsenalTomorrow , setOrdersArsenalTomorrow ] = useState([])
+    const [ordersPargolovoTomorrow , setOrdersPargolovoTomorrow ] = useState([]) 
+    const [ordersTomorrow , setOrdersTomorrow ] = useState([]) 
+    const [ordersLargeYandexTomorrow, setOrdersLargeYandexTomorrow] = useState([])
+    const [ordersYandexTomorrow, setOrdersYandexTomorrow] = useState([])
 
     useEffect(() => { 
         const dateToday = getCurrentDate()
-      
+        const dateTomorrow = getTomorrowDate()
         if(ordersOzn.length){
             const ordersToday = ordersOzn.filter(order => order.shipment_date.slice(0, 10) == dateToday) 
             const ordersPargolovo = ordersToday.filter(order => order.warehouse.slice(0, 9).toLowerCase() == "парголово")
@@ -25,6 +31,16 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex}) => {
             setOrdersArsenal(ordersArsenal)
             setOrdersPargolovo(ordersPargolovo)
             setOrdersToday(ordersToday)
+
+            const ordersTomorrow = ordersOzn.filter(order => order.shipment_date.slice(0, 10) == dateTomorrow) 
+            const ordersPargolovoTomorrow  = ordersTomorrow.filter(order => order.warehouse.slice(0, 9).toLowerCase() == "парголово")
+            const ordersLarge  = ordersTomorrow.filter(order => order.warehouse.slice(0, 9).toLowerCase() !== "парголово")
+            const ordersCMATomorrow  = ordersLarge.filter(order => order.company == "ЦМА")
+            const ordersArsenalTomorrow  = ordersLarge.filter(order => order.company == "Арсенал")
+            setOrdersCMATomorrow (ordersCMATomorrow )
+            setOrdersArsenalTomorrow ( ordersArsenalTomorrow)
+            setOrdersPargolovoTomorrow (ordersPargolovoTomorrow)
+            setOrdersTomorrow (ordersToday)
         }
 
         
@@ -47,12 +63,30 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex}) => {
             const ordersToday = allOrdersYandex.filter(order => { 
                 const currentDate =  formatToDate (order.delivery.shipments[0].shipmentDate) 
                 const todayDate = getCurrentDate()
-                return currentDate == todayDate
+                return currentDate == todayDate && order.status == "PROCESSING" 
             })
+           
             const ordersLarge = ordersToday.filter(orders => orders.company == 'КГТ')
             const ordersYandex = ordersToday.filter(orders => !orders.company )
+            const uniqueOrdersYandex = ordersYandex.filter(yandexOrder => 
+                !ordersLarge.some(largeOrder => largeOrder.id === yandexOrder.id)
+              );
             setOrdersLargeYandex(ordersLarge) 
-            setOrdersYandex(ordersYandex)
+            setOrdersYandex(uniqueOrdersYandex )
+            
+            const ordersTomorrow  = allOrdersYandex.filter(order => { 
+                const currentDate =  formatToDate (order.delivery.shipments[0].shipmentDate) 
+                const tomorrowDate = getTomorrowDate()
+                return currentDate == tomorrowDate && order.status == "PROCESSING" 
+            })
+        
+            const ordersLargeTomorrow = ordersTomorrow.filter(orders => orders.company == 'КГТ')
+            const ordersYandexTomorrow = ordersTomorrow.filter(order => order.company === undefined); 
+            const uniqueOrdersTomorrow = ordersYandexTomorrow.filter(yandexOrder => 
+                !ordersLargeTomorrow.some(largeOrder => largeOrder.id === yandexOrder.id)
+              );
+            setOrdersLargeYandexTomorrow(ordersLargeTomorrow) 
+            setOrdersYandexTomorrow(uniqueOrdersTomorrow)
         }
         
       }, [allOrdersYandex])
@@ -66,7 +100,17 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex}) => {
         return `${year}-${month}-${day}`;
       }
       
+      function getTomorrowDate() {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
       
+        const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        const day = String(tomorrow.getDate()).padStart(2, '0');
+        const year = tomorrow.getFullYear();
+      
+        return `${year}-${month}-${day}`;
+      }
 
       
     return(
@@ -110,7 +154,49 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex}) => {
                 </ListGroup.Item>
 
             </ListGroup>
- 
+            <ListGroup style={{marginLeft: '20px'}}>   
+                    <ListGroup.Item  style={{padding: '0px'}}>              
+                        <Badge style={{fontSize: '32px', width: '330px',display: 'flex',justifyContent: 'space-between',borderBottom: '1px solid black', height: '55px',  color: 'black', padding: '13px 3px  0px 3px',}} bg="light">
+                            
+                            <span style={{padding: '0px',  display: 'flex',   }}>
+                                {`Завтра`}   
+                            </span>
+                            <span style={{padding: '0px',  display: 'flex',  justifyContent: 'space-between',}}>
+                            {`${ getTomorrowDate().slice(8,10)}.${ getTomorrowDate().slice(5,7)}.${ getTomorrowDate().slice(0,4)}`}    
+
+                           
+                            </span>
+                        </Badge>
+                     </ListGroup.Item>
+                   
+                <ListGroup.Item>
+                  
+                    <h3>
+                        ЦМА <Badge style={{fontSize: '24px'}} bg="success">{ordersCMATomorrow .length}</Badge>
+                    </h3>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                    <h3>
+                        Арсенал <Badge style={{fontSize: '24px'}} bg="success">{ordersArsenalTomorrow .length}</Badge>
+                    </h3>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                    <h3>
+                        Парголово <Badge style={{fontSize: '24px'}} bg="primary">{ordersPargolovoTomorrow .length}</Badge>
+                    </h3>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                    <h3>
+                        Яндекс <Badge style={{fontSize: '24px'}} bg="success">{ordersYandexTomorrow.length}</Badge>
+                    </h3>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                    <h3>
+                        Яндекс КГТ <Badge style={{fontSize: '24px'}} bg="primary">{ordersLargeYandexTomorrow.length}</Badge>
+                    </h3>
+                </ListGroup.Item>
+
+            </ListGroup>
         </div>
  )
 }

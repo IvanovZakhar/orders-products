@@ -378,7 +378,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
                 <th className='address'><h6>{`${warehouse.slice(0, 8)}`}</h6></th>
             </tr>
             <tr className='warehouse'>
-                <th className='name-warehouse'><h6>КОЛ-ВО:</h6></th>
+                <th className='name-warehouse__quantity'><h6  >Общ.кол-во   </h6></th>
                 <th className='address'><h6>{`${props.length}`}</h6></th>
             </tr> 
             <NavLink date={date} setDate={setDate}  />

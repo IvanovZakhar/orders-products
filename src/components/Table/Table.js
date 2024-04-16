@@ -12,9 +12,10 @@ import Col from 'react-bootstrap/Col';
 import Badge from 'react-bootstrap/Badge';
 import ModalStatus from '../modal/modal-status'; 
 import { useBarcode } from 'next-barcode';
+import InfoTableOrders from '../InfoTableOrders/InfoTableOrders';
  
 
-function Table({props, date, setDate, onLoadingProduct, loading, error, setCompany, warehouse, company,  logs, errorTable}) {
+function Table({props, date, setDate, onLoadingProduct, loading, setLoading, error, setCompany, warehouse, company,  logs, errorTable, ordersOzn, allOrdersYandex}) {
     
     const [barcode, setBarcode] = useState('');
     const [onScanInitialized, setOnScanInitialized] = useState(false) 
@@ -155,7 +156,12 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
 
     useEffect(() => {
             if(barcode){
-                onLoadingProduct(barcode);
+                setLoading(true)
+                setTimeout(() => {
+                    onLoadingProduct(barcode); 
+                    setLoading(false)
+                  }, 300);
+                  
             }
     }, [barcode]);
 
@@ -365,6 +371,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, error, setCompa
      const Order = errorTable ? <h4>{errorTable}</h4> : elem ? elem() : <h4>Введите штрихкод</h4> 
     return (
         <>  
+            <InfoTableOrders ordersOzn={ordersOzn} allOrdersYandex={allOrdersYandex}/>
             <h5 onClick={() => {setBarcode('400175596448000')}}>{company}</h5>
             <tr className='warehouse'>
                 <th className='name-warehouse'><h6>СКЛАД:</h6></th>

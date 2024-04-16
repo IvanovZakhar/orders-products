@@ -28,6 +28,7 @@ function App() {
         productBarcode, 
         getPhotoProducts, 
         getWerehouse, 
+        setLoading,
         loading, 
         error , 
         productBarcodeYandex, 
@@ -37,47 +38,51 @@ function App() {
         getAllLogs,
         getAllOrdersWB,
         getAllOrdersOZN,
-        getAllOrdersYandex, clearError} = useOrderService();
+        getAllOrdersYandex, 
+        clearError,
+      } = useOrderService();
   const [allProducts, setAllProducts] = useState([])
   const [photoProducts, setPhotoProducts] = useState([])
   const [productsWarehouse, setProductsWarehouse] = useState([])
   const [productsOrdersBarcode, setProductsOrdersBarcode] = useState([])
   const [allOrdersYandex, setAllOrdersYandex] = useState([])
-  const [ordersOzn, setOrdersOzn] = useState([])
- 
+  const [ordersOzn, setOrdersOzn] = useState([]) 
   
   useEffect(() => {
     getAllProductsWarehouse().then(setProductsWarehouse)
     getAllOrdersYandex(49023774).then(allOrders => {
       getAllOrdersYandex(77640946).then(allOrdersLarge => {
+        const resOrdersLarge = allOrdersLarge.map(order => {return {...order, company: 'КГТ'}})  
         getAllOrdersYandex(77640946).then(allOrdersComp => {
-          setAllOrdersYandex([...allOrders, ...allOrdersLarge, allOrdersComp])
+          setAllOrdersYandex([...allOrders, ...resOrdersLarge, ...allOrdersComp])
         })
       })
     })
 
-    JSON.parse(localStorage.getItem('apiData')).forEach(item => {
-      const headersOzn = {  
-          'Client-Id': `${item.clientId}` ,
-          'Api-Key': `${item.apiKey}`
-       } 
-       console.log(item.clientId)
-       getAllOrdersOZN(headersOzn).then(data => {
-          if(item.clientId == 634359){
-            const ordersArsenal = data.map(item => {return {...item, company: 'Арсенал'}})
-            setOrdersOzn(prevOzn => {
-              return[...prevOzn, ...ordersArsenal]
+  //   JSON.parse(localStorage.getItem('apiData')).forEach(item => {
+  //     const headersOzn = {  
+  //         'Client-Id': `${item.clientId}` ,
+  //         'Api-Key': `${item.apiKey}`
+  //      } 
+  //      console.log(item.clientId)
+  //      getAllOrdersOZN(headersOzn).then(data => { 
+  //         if(item.clientId == 634359){
+  //           const ordersArsenal = data.map(item => {return {...item, company: 'Арсенал'}}) 
+  //           setOrdersOzn(prevOzn => {
+  //             return[...prevOzn, ...ordersArsenal]
               
-          })
-          }else if(item.clientId == 611694){
-            const ordersCma = data.map(item => {return {...item, company: 'ЦМА'}})
-            setOrdersOzn(prevOzn => {
-              return[...prevOzn, ...ordersCma]
+  //         })
+  //         }else if(item.clientId == 611694){
+  //           const ordersCma = data.map(item => {return {...item, company: 'ЦМА'}})
+  //           setOrdersOzn(prevOzn => {
+  //             return[...prevOzn, ...ordersCma]
               
-          })
-          }
-       })
-  })
+  //         })
+  //         }
+  //      })
+  // })
+
+  getAllOrdersOZN().then(setOrdersOzn)
 }, [])  
  
  
@@ -282,7 +287,11 @@ const onLoadingProduct = (barcode) => {
                                          warehouse={warehouse}
                                          orders={orders} 
                                          logs={logs}
-                                         errorTable={errorTable}/>
+                                         errorTable={errorTable}
+                                         setLoading={setLoading} 
+                                         ordersOzn={ordersOzn}
+                                         allOrdersYandex={allOrdersYandex}
+                                        />
                                         } /> 
         <Route path="/adding-products" element={ <AddingProducts products={productsWarehouse}/>} /> 
         <Route path="/print-barcode" element={ <PrintBarcode photoProducts={photoProducts} productsWarehouse={productsWarehouse}/>} /> 

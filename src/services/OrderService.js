@@ -1,7 +1,7 @@
 import {useHttp} from '../hooks/http.hook';
 
 const useOrderService = () => {
-    const {loading, request, error, clearError} = useHttp();
+    const {loading, request, error, clearError, setLoading} = useHttp();
 
     const _url = "https://f9fd09879062.vps.myjino.ru:49256"
    const headersDef = {  
@@ -104,8 +104,7 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
 
     const getWerehouse = async (formData, headersOzon = headersDef) => { 
         const res = await request(`https://api-seller.ozon.ru/v3/posting/fbs/get`, 'POST', formData, headersOzon);
-        console.log(res)
-      
+  
         return res.result
     }
 
@@ -114,10 +113,10 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
     }
 
  
-    const getAllOrdersOZN = async (headersDef) => {  
-        const res = await request(`https://api-seller.ozon.ru/v3/posting/fbs/unfulfilled/list`, 'POST', formDataOZN, headersDef );  
+    const getAllOrdersOZN = async () => {  
+        const res = await request(`${_url}/arsenal-orders`, 'GET' );  
         console.log(res)
-        return res.result.postings.map(transformProductOzn)
+        return res
     }
 
 
@@ -258,10 +257,10 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
     const getAllLogs = async () => {
         
         const res = await request(`${_url}/logs/products-for-warehouse`, 
-                                    'GET')
-        console.log(res)
+                                    'GET') 
         return res
     }
+    
     const getAllProductsWB = async () => {
         
         const res = await request(
@@ -284,6 +283,7 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
             getWerehouse, 
             productBarcodeYandex, 
             getAllProductsWarehouse,
+            setLoading,
             loading,
             printBarcode, 
             updateProducts,

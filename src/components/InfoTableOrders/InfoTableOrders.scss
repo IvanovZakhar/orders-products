@@ -1,0 +1,13 @@
+.info-table-order{
+ 
+    display: flex;
+    position: absolute; 
+    right: 50px;
+    h3{
+        font-weight: bold; 
+        font-style: 18px;
+        display: flex;
+        justify-content: space-between;
+        
+    }
+}

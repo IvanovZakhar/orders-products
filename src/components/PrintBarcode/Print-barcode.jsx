@@ -157,9 +157,8 @@ const PrintBarcode = ({photoProducts, productsWarehouse}) => {
 
     const newProducts = productsWarehouse.filter(product => {
       switch(product.article) {
-        case 'AR755102957-06':   
-          return product
- 
+        case 'AR75PU31007-06':   
+          return product 
  
       }
     }) 

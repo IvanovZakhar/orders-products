@@ -356,7 +356,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
                                })}
                            </Row>
                       </Container>
-                      <h6>Цвет: {Column22}</h6>    
+                      <h2>  {Column22}</h2>    
                        <img className='photo-order' src={photo}/>
     
                           

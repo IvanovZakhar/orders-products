@@ -150,18 +150,48 @@ const onLoadingProduct = (barcode) => {
 }
 
  
-  function generateOrderInfo(dataProductList) {
-    console.log(dataProductList)
+  function generateOrderInfo(dataProductList) { 
     const productMap = new Map(allProducts.map(product => [product.article, product]));
-    const photoMap = new Map(photoProducts.map(photo => [photo.article, photo]));
-    console.log(dataProductList)
+    const photoMap = new Map(photoProducts.map(photo => [photo.article, photo])); 
     const updatedProductBarcodes = dataProductList.map(dataProduct => {
       const offerId = dataProduct.offer_id || dataProduct.offerId;
       const productsForOrders = productsOrdersBarcode.filter(p => p.article === offerId);
-  
+     
+          const updatedProductsForOrders = productsForOrders.map(productOrder => {
+              const newOrders = productOrder.orders.map(orderObject => {
+                
+                  if(orderObject.article.slice(0,2) == "AR"){
+                    console.log(orderObject.article.slice(0,8))
+                    // Перебираем orders, фильтруем те, которые есть в productsWarehouse
+                    const updatedOrders = productsWarehouse.filter(orderWarehouse => orderWarehouse.article.slice(0,8) == orderObject.article.slice(0,8))
+                    
+                    // Возвращаем новый объект заказа с обновленным массивом orders
+                    return {
+                      ...orderObject,
+                      quantityWarehouse: updatedOrders[0].quantity
+                    }
+                  }else{
+                    const updatedOrders = productsWarehouse.filter(orderWarehouse => orderWarehouse.article == orderObject.article)
+                    
+                    // Возвращаем новый объект заказа с обновленным массивом orders
+                    return {
+                      ...orderObject,
+                      quantityWarehouse: updatedOrders[0].quantity
+                    }
+                  }
+                  
+                });
+
+          return{
+            ...productOrder,
+            orders: newOrders
+          }
+      })
+   
+      
       let combinedOrders = [];
-      if (productsForOrders.length) {
-        combinedOrders = productsForOrders.flatMap(productForOrders =>
+      if (updatedProductsForOrders.length) {
+        combinedOrders = updatedProductsForOrders.flatMap(productForOrders =>
           productForOrders.orders.map(order => {
             const photo = photoMap.get(order.article);
             return {
@@ -176,6 +206,8 @@ const onLoadingProduct = (barcode) => {
           })
         );
       }  
+
+       
       const product = productMap.get(offerId);
       if (product) {
         product.postingNumber = dataProduct.posting_number;
@@ -208,14 +240,48 @@ const onLoadingProduct = (barcode) => {
       const product = productMap.get(item.offerId);
       const photo = photoMap.get(item.offerId); 
       const filteredOrders = productsOrdersBarcode.filter(p => p.article === item.offerId); 
-      const orders = filteredOrders.length ? 
-        filteredOrders.flatMap(({ orders }) => orders.map(order => ({
+      
+  
+      const updatedProductsForOrders = filteredOrders.map(productOrder => {
+        const newOrders = productOrder.orders.map(orderObject => {
+          console.log(orderObject.article.slice(0,8))
+            if(orderObject.article.slice(0,2) == "AR"){
+             
+              // Перебираем orders, фильтруем те, которые есть в productsWarehouse
+              const updatedOrders = productsWarehouse.filter(orderWarehouse => orderWarehouse.article.slice(0,8) == orderObject.article.slice(0,8))
+              console.log(updatedOrders)
+              // Возвращаем новый объект заказа с обновленным массивом orders
+              return {
+                ...orderObject,
+                quantityWarehouse: updatedOrders[0].quantity
+              }
+            }else{
+              const updatedOrders = productsWarehouse.filter(orderWarehouse => orderWarehouse.article == orderObject.article)
+              
+              // Возвращаем новый объект заказа с обновленным массивом orders
+              return {
+                ...orderObject,
+                quantityWarehouse: updatedOrders[0].quantity
+              }
+            }
+            
+          });
+
+    return{
+      ...productOrder,
+      orders: newOrders
+    }
+})
+
+ 
+      const orders = updatedProductsForOrders.length ? 
+      updatedProductsForOrders.flatMap(({ orders }) => orders.map(order => ({
           ...order,
           quantity: order.quantity * item.count,
           counter: 0,
           success: false,
           main_photo_link: photo ? photo.main_photo_link : null,
-          name_of_product: photo ? photo.name_of_product : null }))
+          name_of_product: photo ? photo.name_of_product : null  }))
       ) : [];
           
       return {
@@ -233,15 +299,44 @@ const onLoadingProduct = (barcode) => {
   }
   
  
-  function generateOrderInfoWB(dataProduct) {  
-    console.log(dataProduct)
+  function generateOrderInfoWB(dataProduct) {   
     const productsForOrders = productsOrdersBarcode.filter(product => product.article === dataProduct[0].article); 
     // Количество для умножения = dataProduct[0].quantity, если есть productsForOrders
     const multiplier = 1
+    const updatedProductsForOrders = productsForOrders.map(productOrder => {
+      const newOrders = productOrder.orders.map(orderObject => {
+        
+          if(orderObject.article.slice(0,2) == "AR"){
+            console.log(orderObject.article.slice(0,8))
+            // Перебираем orders, фильтруем те, которые есть в productsWarehouse
+            const updatedOrders = productsWarehouse.filter(orderWarehouse => orderWarehouse.article.slice(0,8) == orderObject.article.slice(0,8))
+            
+            // Возвращаем новый объект заказа с обновленным массивом orders
+            return {
+              ...orderObject,
+              quantityWarehouse: updatedOrders[0].quantity
+            }
+          }else{
+            const updatedOrders = productsWarehouse.filter(orderWarehouse => orderWarehouse.article == orderObject.article)
+            
+            // Возвращаем новый объект заказа с обновленным массивом orders
+            return {
+              ...orderObject,
+              quantityWarehouse: updatedOrders[0].quantity
+            }
+          }
+          
+        });
+
+  return{
+    ...productOrder,
+    orders: newOrders
+  }
+})
   
     let orders;
-    if (productsForOrders.length) {    
-      orders = productsForOrders[0].orders.map(order => {
+    if (updatedProductsForOrders.length) {    
+      orders = updatedProductsForOrders[0].orders.map(order => {
         const elem = photoProducts.find(item => item.article === order.article);
         return {
           ...order,

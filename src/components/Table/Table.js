@@ -16,7 +16,7 @@ import InfoTableOrders from '../InfoTableOrders/InfoTableOrders';
  
 
 function Table({props, date, setDate, onLoadingProduct, loading, setLoading, error, setCompany, warehouse, company,  logs, errorTable, ordersOzn, allOrdersYandex}) {
-    
+     
     const [barcode, setBarcode] = useState('');
     const [onScanInitialized, setOnScanInitialized] = useState(false) 
     const [addedOrdersBarcode, setAddedOrdersBarcode] = useState([]) 
@@ -83,6 +83,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
             if (scanCode === 'SEND111') { 
               updateProductQuantity({ comment: `${numberPosting}`, productsToUpdate: newOrders })
                 .then((res) => { 
+                    console.log(res)
                 setModalOpen(false);
                 setStatusModalOpen(true)
                 setStatus('Успешно!')
@@ -105,9 +106,11 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
               const updatedOrders = prevOrders.map((order) => {
                 if (order.barcode === scanCode) {
                   if (order.counter !== order.quantity) {
+                    console.log(order)
                     return {
                       ...order,
                       counter: order.counter + 1,
+                      quantityWarehouse: order.quantityWarehouse - 1
                     };
                   } else{
                     return{
@@ -142,6 +145,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
             }
             return order
         })
+        console.log(updateData)
         setNewDataOrders(updateData)
     }, [dataOrders]) 
         
@@ -192,8 +196,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
             margin: '0 auto',
             textAlign: 'center', 
           }}/>;
-      }; 
-      console.log(props)
+      };  
     const elem = props ? ( ) => {
          
         return props.map((prop) => { 
@@ -337,6 +340,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
                                    return( 
                                        <Col>
                                            <Card style={{ width: '18rem'  }}>
+                                                <span style={{fontWeight: 'bold', margin: '0 auto', fontSize: '24px'}}>На складе:  <Badge bg="success" style={{fontSize: '25px'}}> {item.quantityWarehouse}</Badge></span>
                                                <Card.Img variant="top" style={{width: '150px', height: '150px', margin: '0 auto'}} src={item.main_photo_link} />
                                                <Card.Body>
                                                    <Card.Title style={{fontWeight: 'bold'}}>{item.article}</Card.Title>

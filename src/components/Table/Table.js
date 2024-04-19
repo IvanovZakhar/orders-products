@@ -372,7 +372,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
     }: null;
 
  
-     const Order = errorTable ? <h4>{errorTable}</h4> : elem ? elem() : <h4>Введите штрихкод</h4> 
+     const Order = errorTable ? <h4>{errorTable}<br/>Возможно был отменен</h4> : elem ? elem() : <h4>Введите штрихкод</h4> 
     return (
         <>  
             <InfoTableOrders ordersOzn={ordersOzn} allOrdersYandex={allOrdersYandex}/>

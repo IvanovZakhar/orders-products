@@ -102,7 +102,7 @@ useEffect(() => {
 
     // Дата неделю назад
     const weekAgo = new Date();
-    weekAgo.setDate(currentDate.getDate() - 7);
+    weekAgo.setDate(currentDate.getDate() - 4);
 
     // Дата неделю вперед
     const weekLater = new Date();
@@ -134,6 +134,7 @@ const onLoadingProduct = (barcode) => {
           setWarehouse('Яндекс')
       }else if(resWB.length){  
           setErrorTable(null) 
+          console.log(resWB)
           generateOrderInfoWB(resWB)
           setCompany('WB') 
           setWarehouse('Уткина заводь')

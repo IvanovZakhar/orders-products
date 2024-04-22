@@ -47,7 +47,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex}) => {
       }, [ordersOzn])
 
       useEffect(() => {
-        function formatToDate(dateString) {
+        function formatToDate(dateString) { 
             const dateParts = dateString.split('-');
             // Следим за порядком - [гггг, мм, дд]
             const year = dateParts[0];
@@ -61,9 +61,11 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex}) => {
         if(allOrdersYandex.length){
             
             const ordersToday = allOrdersYandex.filter(order => { 
-                const currentDate =  formatToDate (order.delivery.shipments[0].shipmentDate) 
-                const todayDate = getCurrentDate()
-                return currentDate == todayDate && order.status == "PROCESSING" 
+                if(order.status == "PROCESSING"){ 
+                    const currentDate =  formatToDate (order.delivery.shipments[0].shipmentDate) 
+                    const todayDate = getCurrentDate()
+                    return currentDate == todayDate 
+                } 
             })
            
             const ordersLarge = ordersToday.filter(orders => orders.company == 'КГТ')
@@ -75,9 +77,11 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex}) => {
             setOrdersYandex(uniqueOrdersYandex )
             
             const ordersTomorrow  = allOrdersYandex.filter(order => { 
-                const currentDate =  formatToDate (order.delivery.shipments[0].shipmentDate) 
-                const tomorrowDate = getTomorrowDate()
-                return currentDate == tomorrowDate && order.status == "PROCESSING" 
+                if(order.status == "PROCESSING"){ 
+                    const currentDate =  formatToDate (order.delivery.shipments[0].shipmentDate) 
+                    const tomorrowDate = getTomorrowDate()
+                    return currentDate == tomorrowDate 
+                }
             })
         
             const ordersLargeTomorrow = ordersTomorrow.filter(orders => orders.company == 'КГТ')

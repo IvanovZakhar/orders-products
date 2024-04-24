@@ -223,6 +223,8 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
         return res
     }
 
+ 
+
     const updateProductQuantity = async (data) => {
         const res = await request(
             `${_url}/update/products-for-warehouse/updateQuantity`, 
@@ -266,8 +268,16 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
         const res = await request(
                                     `http://localhost:3000/products`, 
                                     'GET' 
-                                    )
-      
+                                    ) 
+        return res
+    }
+
+    const getAllPostingCanceled = async () => {
+        
+        const res = await request(
+                                    `${_url}/posting-canceled`, 
+                                    'GET' 
+                                    ) 
         return res
     }
  
@@ -296,7 +306,8 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
             getAllProductsWB,
             getAllOrdersWB, 
             getAllOrdersYandex,
-            getAllOrdersOZN }
+            getAllOrdersOZN,
+            getAllPostingCanceled  }
 
 }
 

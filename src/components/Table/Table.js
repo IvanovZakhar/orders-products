@@ -46,7 +46,9 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
                 window.scrollTo({ top: window.scrollY - 1970, behavior: 'smooth' });
 
 
-              }
+              }else if(scanCode === 'posting111' ){
+                window.location.href = '/posting-canceled'
+                }
           };
 
         document.addEventListener('scan', handleScan);
@@ -56,6 +58,8 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
         document.removeEventListener('scan', handleScan);
         };
     }, []); 
+
+ 
 
     useEffect(()=> {
         if(props[0]){

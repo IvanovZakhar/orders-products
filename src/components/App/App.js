@@ -9,6 +9,7 @@ import AddingProducts from '../AddingProducts/AddingProducts';
 import PrintBarcode from '../PrintBarcode/Print-barcode';
 import UpdateStatusWarehouse from '../UpdateStatusWarehouse/update-status-warehouse';
 import ListOrder from '../list-order/ListOrder';
+import PostingsCanceled from '../PostingsCanceled/Postings-canceled';
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
         getAllOrdersOZN,
         getAllOrdersYandex, 
         clearError,
+        getAllPostingCanceled 
       } = useOrderService();
   const [allProducts, setAllProducts] = useState([])
   const [photoProducts, setPhotoProducts] = useState([])
@@ -47,7 +49,8 @@ function App() {
   const [productsOrdersBarcode, setProductsOrdersBarcode] = useState([])
   const [allOrdersYandex, setAllOrdersYandex] = useState([])
   const [ordersOzn, setOrdersOzn] = useState([]) 
-  
+  const [postingCanceled, setPostingCanceled] = useState([]) 
+
   useEffect(() => {
     getAllProductsWarehouse().then(setProductsWarehouse)
     getAllOrdersYandex(49023774).then(allOrders => {
@@ -83,6 +86,7 @@ function App() {
   // })
 
   getAllOrdersOZN().then(setOrdersOzn)
+  getAllPostingCanceled().then(setPostingCanceled)
 }, [])  
  
  
@@ -126,7 +130,7 @@ const onLoadingProduct = (barcode) => {
   if(barcode.slice(0, 3) !== 'OZN' && barcode.slice(0,3) !== 'ЩЯТ' && barcode !== '1110011' ){ 
       const resYandex = allOrdersYandex.filter(item => item.id == barcode) 
       const resOzn = ordersOzn.filter(item => item.barcode == barcode)
-      const resWB = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2))  
+      const resWB = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2))   
       if(resYandex.length){ 
           setErrorTable(null)
           generateOrderInfoYandex (resYandex[0])
@@ -398,6 +402,7 @@ const onLoadingProduct = (barcode) => {
                                                     setDate={setDate} 
                                                     onLoadingProducts={onLoadingProducts}  
                                                     logs={logs}/>} />
+        <Route path="/posting-canceled" element={<PostingsCanceled postingCanceled={postingCanceled}   loading={loading} />} />
       </Routes>
     </BrowserRouter>
   );

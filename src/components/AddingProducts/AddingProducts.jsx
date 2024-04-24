@@ -30,7 +30,11 @@ const AddingProducts = ({products}) => {
                 window.location.href = `/update-status-warehouse`
             }else if(scanCode === 'print111' ){
               window.location.href = '/print-barcode'
-            }
+            }else if(scanCode === 'posting111' ){
+              window.location.href = '/posting-canceled'
+              }else if(scanCode === 'posting111' ){
+                window.location.href = '/posting-canceled'
+                }
           };
 
         document.addEventListener('scan', handleScan);

@@ -46,7 +46,6 @@ const PrintBarcode = ({photoProducts, productsWarehouse}) => {
        
     }, [])
 
-    console.log(products)
 
     useEffect(() => {
       let lastScanTime = 0;
@@ -155,13 +154,24 @@ const PrintBarcode = ({photoProducts, productsWarehouse}) => {
         }}/>;
     };
 
+    const articlesToFilter = [
+      'AR16S702957-06',
+      'AR16S701957-06',
+      'AAR16T701957-06',
+      'AR16C103957-06',
+      'AR16C701957-06',
+      'AR16C102957-06',
+      'AR16C703957-06', 
+      'AR16C702957-06',
+      
+      'AR16C101957-06',
+    ];
+    
     const newProducts = productsWarehouse.filter(product => {
-      switch(product.article) {
-        case 'AR75PU31007-06':   
-          return product 
- 
-      }
-    }) 
+      return articlesToFilter.includes(product.article);
+    }); 
+    
+    console.log(newProducts)
     return(
        
  

@@ -44,19 +44,19 @@ const PostingsCanceled = ({postingCanceled, loading}) => {
 
     return(
         <Table striped bordered hover>
-        <thead>
+        <thead style={{fontSize: '34px'}}>
           <tr>
             <th>№</th>
             <th>Номер отправления</th>
             <th>Дата</th> 
           </tr>
         </thead>
-        <tbody>
+        <tbody style={{fontSize: '34px'}}>
             {loading ? <GetSpinner/> : postingCanceled.map((posting, i) => {
                 return (
                     <tr>
                     <td>{i+1}</td>
-                    <td>{posting.posting_number}</td>
+                    <td >{posting.posting_number}</td>
                     <td>-</td> 
                   </tr>
                 )

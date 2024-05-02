@@ -34,6 +34,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex}) => {
 
             const ordersTomorrow = ordersOzn.filter(order => order.shipment_date.slice(0, 10) == dateTomorrow) 
             const ordersPargolovoTomorrow  = ordersTomorrow.filter(order => order.warehouse.slice(0, 9).toLowerCase() == "парголово")
+            console.log(ordersPargolovoTomorrow)
             const ordersLarge  = ordersTomorrow.filter(order => order.warehouse.slice(0, 9).toLowerCase() !== "парголово")
             const ordersCMATomorrow  = ordersLarge.filter(order => order.company == "ЦМА")
             const ordersArsenalTomorrow  = ordersLarge.filter(order => order.company == "Арсенал")

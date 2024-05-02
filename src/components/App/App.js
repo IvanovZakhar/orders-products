@@ -106,11 +106,11 @@ useEffect(() => {
 
     // Дата неделю назад
     const weekAgo = new Date();
-    weekAgo.setDate(currentDate.getDate() - 4);
+    weekAgo.setDate(currentDate.getDate() - 7);
 
     // Дата неделю вперед
     const weekLater = new Date();
-    weekLater.setDate(currentDate.getDate() + 7);
+    weekLater.setDate(currentDate.getDate() + 2);
     
 
     getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(setAllOrdersWB)

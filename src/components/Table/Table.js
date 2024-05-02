@@ -96,6 +96,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
                     window.location.reload();
                 }, 1500);
               }).catch(er => {
+                console.log(er)
                 setModalOpen(false)
                 setStatusModalOpen(true)
                 setStatus('Ошибка!')
@@ -153,7 +154,8 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
         setNewDataOrders(updateData)
     }, [dataOrders]) 
         
-
+    console.log(dataOrders)
+    console.log(newOrders)
     useEffect(() => {
         if (!onScanInitialized) {
         onScan.attachTo(document);
@@ -340,7 +342,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
                        <Container > 
                            {prop.orders.length ? <h2 style={{color: 'grey'}}>Отсканируйте штрихкоды:</h2> : null}
                            <Row>
-                               {packed ? <h2 style={{color: 'green'}}>Упакован!</h2> : newOrders.map(item => {  
+                               {packed ? <h2 style={{color: 'green'}}>Упакован!</h2> : dataOrders.map(item => {  
                                    return( 
                                        <Col>
                                            <Card style={{ width: '18rem'  }}>
@@ -353,8 +355,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
                                                    </Card.Text>
                                                </Card.Body>
                                                <Col style={{display: 'flex', justifyContent: 'center'}}>
-                                                   <Badge bg={`${item.success ? "success":"secondary"}`} style={{fontSize: '25px'}}>{item.counter} / {item.quantity}</Badge>
-                                               
+                                                   <Badge bg={`${item.success ? "success":"secondary"}`} style={{fontSize: '25px'}}> {item.quantity}</Badge> 
                                                
                                                </Col>
                                            </Card>

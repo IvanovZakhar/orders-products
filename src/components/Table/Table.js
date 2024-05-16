@@ -15,7 +15,7 @@ import { useBarcode } from 'next-barcode';
 import InfoTableOrders from '../InfoTableOrders/InfoTableOrders';
  
 
-function Table({props, date, setDate, onLoadingProduct, loading, setLoading, error, setCompany, warehouse, company,  logs, errorTable, ordersOzn, allOrdersYandex}) {
+function Table({props, date, setDate, onLoadingProduct, loading, setLoading, error, setCompany, warehouse, company,  logs, errorTable, ordersOzn, allOrdersYandex, productsOrdersBarcode}) {
      
     const [barcode, setBarcode] = useState('');
     const [onScanInitialized, setOnScanInitialized] = useState(false) 
@@ -84,10 +84,9 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
         const handleScan = (e) => {
             const scanCode = e.detail.scanCode;
             setBarcode(scanCode); 
-            if (scanCode === 'SEND111') { 
+            if (scanCode === 'SEND111') {  
               updateProductQuantity({ comment: `${numberPosting}`, productsToUpdate: newOrders })
-                .then((res) => { 
-                    console.log(res)
+                .then((res) => {  
                 setModalOpen(false);
                 setStatusModalOpen(true)
                 setStatus('Успешно!')
@@ -110,8 +109,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
             setDataOrders((prevOrders) => {
               const updatedOrders = prevOrders.map((order) => {
                 if (order.barcode === scanCode) {
-                  if (order.counter !== order.quantity) {
-                    console.log(order)
+                  if (order.counter !== order.quantity) { 
                     return {
                       ...order,
                       counter: order.counter + 1,
@@ -149,13 +147,9 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
                 }
             }
             return order
-        })
-        console.log(updateData)
+        }) 
         setNewDataOrders(updateData)
-    }, [dataOrders]) 
-        
-    console.log(dataOrders)
-    console.log(newOrders)
+    }, [dataOrders])   
     useEffect(() => {
         if (!onScanInitialized) {
         onScan.attachTo(document);
@@ -380,7 +374,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
      const Order = errorTable ? <h4>{errorTable}<br/>Возможно был отменен</h4> : elem ? elem() : <h4>Введите штрихкод</h4> 
     return (
         <>  
-            <InfoTableOrders ordersOzn={ordersOzn} allOrdersYandex={allOrdersYandex}/>
+            <InfoTableOrders ordersOzn={ordersOzn} allOrdersYandex={allOrdersYandex} logs={logs} productsOrdersBarcode={productsOrdersBarcode}/>
             <h5 onClick={() => {setBarcode('400175596448000')}}>{company}</h5>
             <tr className='warehouse'>
                 <th className='name-warehouse'><h6>СКЛАД:</h6></th>

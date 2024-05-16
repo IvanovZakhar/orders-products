@@ -51,50 +51,8 @@ function App() {
   const [ordersOzn, setOrdersOzn] = useState([]) 
   const [postingCanceled, setPostingCanceled] = useState([]) 
 
-  useEffect(() => {
-    getAllProductsWarehouse().then(setProductsWarehouse)
-    getAllOrdersYandex(49023774).then(allOrders => {
-      getAllOrdersYandex(77640946).then(allOrdersLarge => {
-        const resOrdersLarge = allOrdersLarge.map(order => {return {...order, company: 'КГТ'}})  
-        getAllOrdersYandex(77640946).then(allOrdersComp => {
-          setAllOrdersYandex([...allOrders, ...resOrdersLarge, ...allOrdersComp])
-        })
-      })
-    })
 
-  //   JSON.parse(localStorage.getItem('apiData')).forEach(item => {
-  //     const headersOzn = {  
-  //         'Client-Id': `${item.clientId}` ,
-  //         'Api-Key': `${item.apiKey}`
-  //      } 
-  //      console.log(item.clientId)
-  //      getAllOrdersOZN(headersOzn).then(data => { 
-  //         if(item.clientId == 634359){
-  //           const ordersArsenal = data.map(item => {return {...item, company: 'Арсенал'}}) 
-  //           setOrdersOzn(prevOzn => {
-  //             return[...prevOzn, ...ordersArsenal]
-              
-  //         })
-  //         }else if(item.clientId == 611694){
-  //           const ordersCma = data.map(item => {return {...item, company: 'ЦМА'}})
-  //           setOrdersOzn(prevOzn => {
-  //             return[...prevOzn, ...ordersCma]
-              
-  //         })
-  //         }
-  //      })
-  // })
-
-  getAllOrdersOZN().then(setOrdersOzn)
-  getAllPostingCanceled().then(setPostingCanceled)
-}, [])  
- 
- 
- 
-
- 
- 
-  // Устанавливаем продукты для нарядов с базы
+    // Устанавливаем продукты для нарядов с базы
 useEffect(() => {
     
     getInfoProducts().then(setAllProducts) 
@@ -115,6 +73,30 @@ useEffect(() => {
 
     getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(setAllOrdersWB)
   }, [])
+
+  useEffect(() => {
+    getAllProductsWarehouse().then(setProductsWarehouse)
+    getAllOrdersYandex(49023774).then(allOrders => {
+      getAllOrdersYandex(77640946).then(allOrdersLarge => {
+        const resOrdersLarge = allOrdersLarge.map(order => {return {...order, company: 'КГТ'}})  
+        getAllOrdersYandex(68501637).then(allOrdersComp => {
+          setAllOrdersYandex([...allOrders, ...resOrdersLarge, ...allOrdersComp])
+        })
+      })
+    })
+
+ 
+
+  getAllOrdersOZN().then(setOrdersOzn)
+  getAllPostingCanceled().then(setPostingCanceled)
+}, [])  
+ 
+ 
+ 
+
+ 
+ 
+
  
   
   useEffect(() => {
@@ -391,6 +373,7 @@ const onLoadingProduct = (barcode) => {
                                          setLoading={setLoading} 
                                          ordersOzn={ordersOzn}
                                          allOrdersYandex={allOrdersYandex}
+                                         productsOrdersBarcode={productsOrdersBarcode}
                                         />
                                         } /> 
         <Route path="/adding-products" element={ <AddingProducts products={productsWarehouse}/>} /> 

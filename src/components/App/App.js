@@ -108,6 +108,8 @@ useEffect(() => {
  
    };
 
+   console.log(allOrdersWB)
+
 const onLoadingProduct = (barcode) => {   
   if(barcode.slice(0, 3) !== 'OZN' && barcode.slice(0,3) !== 'ЩЯТ' && barcode !== '1110011' ){ 
       const resYandex = allOrdersYandex.filter(item => item.id == barcode) 

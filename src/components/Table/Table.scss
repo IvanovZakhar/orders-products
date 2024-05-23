@@ -131,7 +131,7 @@ h4{
 h5{
     margin: 0 auto;
     width: 800px;
-    font-size: 140px;
+    font-size: 90px;
     font-weight: bold;
     text-align: center;
     border: 10px solid black;
@@ -272,4 +272,11 @@ h6{
     margin-bottom: 50px;
   }
   
- 
+ .date-update-ozn{
+    position: absolute;
+    top: 3px;
+    left: 20px;
+    font-weight: bold;
+    color: green;
+    border-bottom: 1px solid black;
+ }

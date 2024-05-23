@@ -22,6 +22,7 @@ function App() {
   const [allOrdersWB, setAllOrdersWB] = useState([])
   const [logs, setLogs] = useState([])
   const [errorTable, setErrorTable] = useState(null)
+  const [CanceledProduct, setCanceledProduct] = useState(null)
   const {getInfoProducts, 
         getBaskets, 
         getAllProducts, 
@@ -97,7 +98,7 @@ useEffect(() => {
  
  
 
- 
+
   
   useEffect(() => {
     onLoadingProducts();
@@ -107,14 +108,14 @@ useEffect(() => {
   const onLoadingProducts = (data = localStorage.data) => {
  
    };
-
-   console.log(allOrdersWB)
-
+  
 const onLoadingProduct = (barcode) => {   
   if(barcode.slice(0, 3) !== 'OZN' && barcode.slice(0,3) !== 'ЩЯТ' && barcode !== '1110011' ){ 
       const resYandex = allOrdersYandex.filter(item => item.id == barcode) 
       const resOzn = ordersOzn.filter(item => item.barcode == barcode)
-      const resWB = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2))   
+      const resWB = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2))    
+     
+
       if(resYandex.length){ 
           setErrorTable(null)
           generateOrderInfoYandex (resYandex[0])
@@ -127,16 +128,52 @@ const onLoadingProduct = (barcode) => {
           setCompany('WB') 
           setWarehouse('Уткина заводь')
       }else if (resOzn.length){
+        console.log(resOzn)
         setErrorTable(null)
         generateOrderInfo(resOzn)
         setCompany(resOzn[0].company) 
         setWarehouse(resOzn[0].warehouse)
-      }else{
-        setErrorTable('Штрихкод не найден')
+      }else{ 
+        setLoading(true) 
+        searchCanceledOrders(barcode) 
       }
     
   }
 }
+
+function searchCanceledOrders (barcode) {
+  const formData = { 
+    "barcode": `${barcode}`
+  }
+   
+  JSON.parse(localStorage.apiData).forEach((data, i) => {
+    const headersDef = {  
+      'Client-Id': `${data.clientId}` ,
+        'Api-Key': `${data.apiKey}`
+      }
+    if(i < 2){ 
+    productBarcode(JSON.stringify(formData), headersDef)
+    .then(res => {
+      setErrorTable(null)
+      setLoading(false) 
+        if(res.status == 'cancelled'){ 
+          setErrorTable('Товар отменен') 
+        }else{ 
+          generateOrderInfo([res]) 
+          setCompany(data.name)
+        }
+    
+     }).catch(er => {
+      setErrorTable('Штрихкод не найден')
+    })
+
+
+    }})
+}
+
+
+
+
 
  
   function generateOrderInfo(dataProductList) { 
@@ -202,6 +239,7 @@ const onLoadingProduct = (barcode) => {
         product.postingNumber = dataProduct.posting_number;
         product.quantity = dataProduct.quantity;
         product.date = `${dataProduct.shipment_date.slice(8, 10)}.${dataProduct.shipment_date.slice(5, 7)}.${dataProduct.shipment_date.slice(0, 4)}`;
+        
         const photo = photoMap.get(offerId);
         product.photo = photo ? photo.main_photo_link : null;
         
@@ -375,7 +413,7 @@ const onLoadingProduct = (barcode) => {
                                          setLoading={setLoading} 
                                          ordersOzn={ordersOzn}
                                          allOrdersYandex={allOrdersYandex}
-                                         productsOrdersBarcode={productsOrdersBarcode}
+                                         productsOrdersBarcode={productsOrdersBarcode} 
                                         />
                                         } /> 
         <Route path="/adding-products" element={ <AddingProducts products={productsWarehouse}/>} /> 

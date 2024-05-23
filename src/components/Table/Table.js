@@ -368,10 +368,9 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
             
            )
         })
-    }: null;
-
+    }: null; 
  
-     const Order = errorTable ? <h4>{errorTable}<br/>Возможно был отменен</h4> : elem ? elem() : <h4>Введите штрихкод</h4> 
+     const Order = errorTable ? <h4>{errorTable} </h4> : elem ? elem() : <h4>Введите штрихкод</h4> 
     return (
         <>  
             <InfoTableOrders ordersOzn={ordersOzn} allOrdersYandex={allOrdersYandex} logs={logs} productsOrdersBarcode={productsOrdersBarcode}/>
@@ -383,12 +382,12 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
             <tr className='warehouse'>
                 <th className='name-warehouse__quantity'><h6  >Общ.кол-во   </h6></th>
                 <th className='address'><h6>{`${props.length}`}</h6></th>
-            </tr> 
-            <NavLink date={date} setDate={setDate}  />
+            </tr>  
             {  loading ? <GetSpinner/> : Order}  
         
             <ModalSend modalOpen={modalOpen}  setModalOpen={setModalOpen}/>
             <ModalStatus modalStatusOpen={modalStatusOpen} setStatusModalOpen={setStatusModalOpen} status={status}/>
+      <p className='date-update-ozn'>{ordersOzn.length ? `${ordersOzn[0].added_date.slice(8, 10)}.${ordersOzn[0].added_date.slice(5, 7)}.${ordersOzn[0].added_date.slice(0, 4)}` : null}</p>
         </>
 )}
     

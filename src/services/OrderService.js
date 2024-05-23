@@ -48,11 +48,14 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
     }
 
     const productBarcode = async (formData, headersOzon = headersDef) => { 
+        console.log(formData)
+        console.log(headersOzon)
         const res = await request(`https://api-seller.ozon.ru/v2/posting/fbs/get-by-barcode`, 'POST', formData, headersOzon);
         console.log(res)
-        res.result.products[0].shipment_date = res.result.shipment_date
         res.result.products[0].posting_number = res.result.posting_number
-        return res.result.products
+        res.result.products[0].shipment_date = res.result.shipment_date 
+        res.result.products[0].status = res.result.status
+        return res.result.products[0]
     }
 
     const productBarcodeYandex = async (barcode) => {   

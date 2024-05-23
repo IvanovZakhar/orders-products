@@ -4,8 +4,7 @@ import Badge from 'react-bootstrap/Badge';
 import './InfoTableOrders.scss'
 
 
-const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcode}) => {
-    console.log(allOrdersYandex)
+const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcode}) => { 
      
 
     const [ordersCMA, setOrdersCMA] = useState([])
@@ -146,8 +145,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     return currentDate == todayDate 
                 } 
             }) 
-            
-            console.log(ordersToday)
+             
 
            // Раскидываем нужные компании
             const ordersLarge = ordersToday.filter(orders => orders.company == 'КГТ')
@@ -159,8 +157,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
  
             setOrdersLargeYandex(allOrdersLarge) 
             setOrdersYandex(allOrdersYandex)
-
-            console.log(ordersLarge)
+ 
      
             setOrdersYandexPacked(ordersYandex.filter(item => !item.packed))
             setOrdersLargeYandexPacked(ordersLarge.filter(item => !item.packed))
@@ -179,8 +176,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
             // Выдаем полный список товаров. Вытаскивая из каждого заказа содержимое
             const allOrdersLargeTomorrow = ordersLargeTomorrow.flatMap(order => order.items)
             const allOrdersYandexTomorrow = ordersYandexTomorrow.flatMap(order => order.items)
- 
-            console.log(allOrdersLargeTomorrow)
+  
 
             setOrdersYandexTomorrowPacked(allOrdersYandexTomorrow.filter(item => !item.packed))
             setOrdersLargeYandexTomorrowPacked(allOrdersLargeTomorrow.filter(item => !item.packed))
@@ -193,8 +189,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
         }
         
       }, [allOrdersYandex])
-
-      console.log(ordersYandexPacked)
+ 
 
     function getCurrentDate() {
         const today = new Date();
@@ -263,7 +258,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     <h3>
                         ЦМА 
                         <div>   
-                            <Badge style={{fontSize: '24px'}} bg="success">{`${ordersCMAPacked.length} / ${ordersCMA.length}`}</Badge> 
+                            <Badge style={{fontSize: '20px'}} bg="success">{`${ordersCMAPacked.length} / ${ordersCMA.length}`}</Badge> 
                           
                         </div>
                     </h3>
@@ -272,7 +267,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     <h3>
                         Арсенал 
                         <div> 
-                            <Badge style={{fontSize: '24px'}} bg="success">{`${ordersArsenalPacked.length} / ${ordersArsenal.length}`}</Badge> 
+                            <Badge style={{fontSize: '20px'}} bg="success">{`${ordersArsenalPacked.length} / ${ordersArsenal.length}`}</Badge> 
                         </div>
                     </h3>
                 </ListGroup.Item>
@@ -280,7 +275,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     <h3>
                         Парголово 
                         <div> 
-                            <Badge style={{fontSize: '24px'}} bg="primary">{`${ordersPargolovoPacked.length} / ${ordersPargolovo.length}`}</Badge> 
+                            <Badge style={{fontSize: '20px'}} bg="primary">{`${ordersPargolovoPacked.length} / ${ordersPargolovo.length}`}</Badge> 
                         </div>
                     </h3>
                 </ListGroup.Item>
@@ -288,7 +283,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     <h3>
                         Яндекс 
                         <div> 
-                            <Badge style={{fontSize: '24px'}} bg="success">{`${ordersYandexPacked.length} / ${ordersYandex.length}`}</Badge>
+                            <Badge style={{fontSize: '20px'}} bg="success">{`${ordersYandexPacked.length} / ${ordersYandex.length}`}</Badge>
                         </div>
                     </h3>
                 </ListGroup.Item>
@@ -296,31 +291,41 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     <h3>
                         Яндекс КГТ 
                         <div> 
-                            <Badge style={{fontSize: '24px'}} bg="primary"> {`${ordersLargeYandexPacked.length} / ${ordersLargeYandex.length}`}</Badge>
+                            <Badge style={{fontSize: '20px'}} bg="primary"> {`${ordersLargeYandexPacked.length} / ${ordersLargeYandex.length}`}</Badge>
                         </div>
                     </h3>
                 </ListGroup.Item>
 
             </ListGroup>
             <ListGroup style={{marginLeft: '20px', position: 'absolute', right: '150px'}}>   
-                    <ListGroup.Item  style={{padding: '0px'}}>              
-                        <Badge style={{fontSize: '32px', width: '330px',display: 'flex',justifyContent: 'space-between',borderBottom: '1px solid black', height: '55px',  color: 'black', padding: '13px 3px  0px 3px',}} bg="light">
-                            
-                    
-                            <span style={{padding: '0px',  display: 'flex',  justifyContent: 'space-between',}}>
-                            {`${ getTomorrowDate().slice(8,10)}.${ getTomorrowDate().slice(5,7)}.${ getTomorrowDate().slice(0,4)}`}    
+                <ListGroup.Item  style={{padding: '0px'}}>              
+                    <Badge style={{fontSize: '32px', width: '330px',display: 'flex',justifyContent: 'space-between',borderBottom: '1px solid black', height: '55px',  color: 'black', padding: '13px 3px  0px 3px',}} bg="light">
+                        
+                
+                        <span style={{padding: '0px',  display: 'flex',  justifyContent: 'space-between',}}>
+                            {`${ getTomorrowDate().slice(8,10)}.${ getTomorrowDate().slice(5,7)}.${ getTomorrowDate().slice(0,4)}`}     
+                        </span>
+                    </Badge>
+                </ListGroup.Item> 
+            </ListGroup>
 
-                           
-                            </span>
-                        </Badge>
-                     </ListGroup.Item>
+              <ListGroup style={{marginLeft: '20px', position: 'absolute', right: '150px'}}>   
+                <ListGroup.Item  style={{padding: '0px'}}>              
+                    <Badge style={{fontSize: '32px', width: '330px',display: 'flex',justifyContent: 'space-between',borderBottom: '1px solid black', height: '55px',  color: 'black', padding: '13px 3px  0px 3px',}} bg="light">
+                        
+                
+                        <span style={{padding: '0px',  display: 'flex',  justifyContent: 'space-between',}}>
+                            {`${ getTomorrowDate().slice(8,10)}.${ getTomorrowDate().slice(5,7)}.${ getTomorrowDate().slice(0,4)}`}     
+                        </span>
+                    </Badge>
+                </ListGroup.Item>
                    
-                <ListGroup.Item>
+                <ListGroup.Item > 
                   
                     <h3>
                         ЦМА 
                         <div> 
-                            <Badge style={{fontSize: '24px'}} bg="success">{ `${ordersCMATomorrowPacked.length} / ${ordersCMATomorrow.length}`} </Badge>
+                            <Badge style={{fontSize: '20px'}} bg="success">{ `${ordersCMATomorrowPacked.length} / ${ordersCMATomorrow.length}`} </Badge>
                         </div>
                     </h3>
                 </ListGroup.Item>
@@ -328,7 +333,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     <h3>
                         Арсенал 
                         <div> 
-                            <Badge style={{fontSize: '24px'}} bg="success">{ `${ordersArsenalTomorrowPacked.length} / ${ordersArsenalTomorrow .length}`}</Badge>
+                            <Badge style={{fontSize: '20px'}} bg="success">{ `${ordersArsenalTomorrowPacked.length} / ${ordersArsenalTomorrow .length}`}</Badge>
                         </div>
                     </h3>
                 </ListGroup.Item>
@@ -336,7 +341,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     <h3>
                         Парголово 
                         <div> 
-                            <Badge style={{fontSize: '24px'}} bg="primary"> {`${ordersPargolovoTomorrowPacked.length} / ${ordersPargolovoTomorrow .length}`}</Badge>
+                            <Badge style={{fontSize: '20px'}} bg="primary"> {`${ordersPargolovoTomorrowPacked.length} / ${ordersPargolovoTomorrow .length}`}</Badge>
                         </div>
                     </h3>
                 </ListGroup.Item>
@@ -344,7 +349,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     <h3>
                         Яндекс
                         <div> 
-                            <Badge style={{fontSize: '24px'}} bg="success">  {`${ordersYandexTomorrowPacked.length} / ${ordersYandexTomorrow.length}`}</Badge>
+                            <Badge style={{fontSize: '20px'}} bg="success">  {`${ordersYandexTomorrowPacked.length} / ${ordersYandexTomorrow.length}`}</Badge>
                         </div>
                     </h3>
                 </ListGroup.Item>
@@ -352,7 +357,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     <h3>
                         Яндекс КГТ 
                         <div> 
-                            <Badge style={{fontSize: '24px'}} bg="primary"> {`${ordersLargeYandexTomorrowPacked.length} / ${ordersLargeYandexTomorrow.length}`}</Badge>
+                            <Badge style={{fontSize: '20px'}} bg="primary"> {`${ordersLargeYandexTomorrowPacked.length} / ${ordersLargeYandexTomorrow.length}`}</Badge>
                         </div>
                     </h3>
                 </ListGroup.Item>

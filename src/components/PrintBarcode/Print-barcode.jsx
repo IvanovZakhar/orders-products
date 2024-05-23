@@ -155,21 +155,19 @@ const PrintBarcode = ({photoProducts, productsWarehouse}) => {
     };
 
     const articlesToFilter = [
-      'AR16S702957-06',
-      'AR16S701957-06',
-      'AAR16T701957-06',
-      'AR16C103957-06',
-      'AR16C701957-06',
-      'AR16C102957-06',
-      'AR16C703957-06', 
-      'AR16C702957-06',
+      'КК-1',
+      'КД-З',
+      'КД-Б', 
       
-      'AR16C101957-06',
+      
     ];
     
-    const newProducts = productsWarehouse.filter(product => {
-      return articlesToFilter.includes(product.article);
-    }); 
+    // const newProducts = photoProducts.filter(product => {
+    //   return articlesToFilter.includes(product.article);
+    // }); 
+    console.log(photoProducts)
+
+    const newProducts = photoProducts.filter(product => product.article.slice(0, 4) == 'AR16')
     
     console.log(newProducts)
     return(
@@ -179,22 +177,25 @@ const PrintBarcode = ({photoProducts, productsWarehouse}) => {
                  {/* <h1>Выберите штрихкод для ПЕЧАТИ</h1> */}
                  <ModalPrint modalOpen={modalOpen} setModalOpen={setModalOpen} photo={photo} printName={printName}/>
                   {newProducts.map((product, i) => {
-                    const {article, main_photo_link, name_of_product, barcode} = product 
+                    const {article, main_photo_link, name_of_product, barcode, barcode_serial_number_ean} = product 
                   
-                  
+                    if(barcode_serial_number_ean){
+
                       return(
-                        <Card style={{ width: '20rem', height: '535px', marginLeft: '70px',  marginTop: '20px' }}>
+                        <Card style={{ width: '20rem', height: '525px', marginLeft: '70px',  marginTop: '20px' }}>
                           <Card.Img variant="top" src={main_photo_link} style={{ width: '120px' }}/>
                           <Card.Body style={{padding: '0'}}>
                             <Card.Title style={{fontWeight: 'bold'}}>{article}</Card.Title>
                             <Card.Title>{name_of_product.slice(0, 100)}</Card.Title>
                             Штрихкод
-                            <Barcode barcodeOrders={barcode}/>
+                            <Barcode barcodeOrders={barcode_serial_number_ean}/>
                             Наклейка
-                            <Barcode barcodeOrders={`BAR${barcode.slice(3, 13)}`}/>
+                            <Barcode barcodeOrders={`BAR${barcode_serial_number_ean.slice(3, 13)}`}/>
                           </Card.Body>
                          </Card>
                         )
+                    }
+             
                     
                   })
                     

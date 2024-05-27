@@ -8,8 +8,7 @@ import './App.css';
 import AddingProducts from '../AddingProducts/AddingProducts';
 import PrintBarcode from '../PrintBarcode/Print-barcode';
 import UpdateStatusWarehouse from '../UpdateStatusWarehouse/update-status-warehouse';
-import ListOrder from '../list-order/ListOrder';
-import PostingsCanceled from '../PostingsCanceled/Postings-canceled';
+import ListOrder from '../list-order/ListOrder'; 
 
 
 function App() {
@@ -425,8 +424,7 @@ function searchCanceledOrders (barcode) {
                                                     date={date} 
                                                     setDate={setDate} 
                                                     onLoadingProducts={onLoadingProducts}  
-                                                    logs={logs}/>} />
-        <Route path="/posting-canceled" element={<PostingsCanceled postingCanceled={postingCanceled}   loading={loading} />} />
+                                                    logs={logs}/>} /> 
       </Routes>
     </BrowserRouter>
   );

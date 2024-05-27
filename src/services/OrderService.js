@@ -67,6 +67,11 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
        }
     }
 
+    const getStickersWB = async (apiKey, body) => {   
+        console.log(body)
+        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/wb-stickers`, 'POST', body); 
+        return res.stickers
+    }
 
 
 
@@ -310,7 +315,8 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
             getAllOrdersWB, 
             getAllOrdersYandex,
             getAllOrdersOZN,
-            getAllPostingCanceled  }
+            getAllPostingCanceled,
+            getStickersWB  }
 
 }
 

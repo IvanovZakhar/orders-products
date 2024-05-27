@@ -114,7 +114,7 @@ const onLoadingProduct = (barcode) => {
       const resYandex = allOrdersYandex.filter(item => item.id == barcode) 
       const resOzn = ordersOzn.filter(item => item.barcode == barcode)
       const resWB = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2))    
-     
+
 
       if(resYandex.length){ 
           setErrorTable(null)
@@ -414,6 +414,7 @@ function searchCanceledOrders (barcode) {
                                          ordersOzn={ordersOzn}
                                          allOrdersYandex={allOrdersYandex}
                                          productsOrdersBarcode={productsOrdersBarcode} 
+                                         allOrdersWB={allOrdersWB}
                                         />
                                         } /> 
         <Route path="/adding-products" element={ <AddingProducts products={productsWarehouse}/>} /> 

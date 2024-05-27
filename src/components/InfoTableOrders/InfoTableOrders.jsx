@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
+import useOrderService from '../../services/OrderService';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Badge from 'react-bootstrap/Badge';
 import './InfoTableOrders.scss'
 
 
-const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcode}) => { 
+const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcode, allOrdersWB}) => { 
      
 
     const [ordersCMA, setOrdersCMA] = useState([])
@@ -28,7 +29,9 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
     const [ordersLargeYandexTomorrow, setOrdersLargeYandexTomorrow] = useState([])
     const [ordersYandexTomorrow, setOrdersYandexTomorrow] = useState([]) 
     const [ordersLargeYandexTomorrowPacked, setOrdersLargeYandexTomorrowPacked] = useState([])
-    const [ordersYandexTomorrowPacked, setOrdersYandexTomorrowPacked] = useState([]) 
+    const [ordersYandexTomorrowPacked, setOrdersYandexTomorrowPacked] = useState([])
+    const [ordersNotPackedWb, setOrdersNotPackedWb] = useState([])
+    const {getStickersWB} = useOrderService()
 
     useEffect(() => { 
   
@@ -44,7 +47,6 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
             }
           }) 
           
-    
 
         const dateToday = getCurrentDate()
         const dateTomorrow = getTomorrowDate()
@@ -107,10 +109,23 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
         }
 
         
-      }, [ordersOzn, logs, productsOrdersBarcode])
+      }, [ordersOzn, logs, productsOrdersBarcode, allOrdersWB])
 
+
+    useEffect(() => {
+        const packedOrdersWB = allOrdersWB.filter(orderWb => {
+            const res = logs.filter(log => log.comment == orderWb.id)
+            if(!res.length){
+                return orderWb.id
+            }
+        }) 
+        const orders = packedOrdersWB.map(order => order.id)
+      
+        getStickersWB([], JSON.stringify({'orders': orders})).then(setOrdersNotPackedWb)
+
+    }, [allOrdersWB])
     
-
+ 
 
       useEffect(() => {
 
@@ -295,7 +310,14 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                         </div>
                     </h3>
                 </ListGroup.Item>
-
+                <ListGroup.Item>
+                    <h3>
+                        Wildberries 
+                        <div> 
+                            <Badge style={{fontSize: '20px'}} bg="primary"> {`${ordersNotPackedWb.length} / ∞`}</Badge>
+                        </div>
+                    </h3>
+                </ListGroup.Item>
             </ListGroup>
             <ListGroup style={{marginLeft: '20px', position: 'absolute', right: '150px'}}>   
                 <ListGroup.Item  style={{padding: '0px'}}>              

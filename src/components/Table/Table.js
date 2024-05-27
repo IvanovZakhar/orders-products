@@ -15,7 +15,7 @@ import { useBarcode } from 'next-barcode';
 import InfoTableOrders from '../InfoTableOrders/InfoTableOrders';
  
 
-function Table({props, date, setDate, onLoadingProduct, loading, setLoading, error, setCompany, warehouse, company,  logs, errorTable, ordersOzn, allOrdersYandex, productsOrdersBarcode}) {
+function Table({props, date, setDate, onLoadingProduct, loading, setLoading, error, setCompany, warehouse, company,  logs, errorTable, ordersOzn, allOrdersYandex, productsOrdersBarcode, allOrdersWB}) {
      
     const [barcode, setBarcode] = useState('');
     const [onScanInitialized, setOnScanInitialized] = useState(false) 
@@ -373,7 +373,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
      const Order = errorTable ? <h4>{errorTable} </h4> : elem ? elem() : <h4>Введите штрихкод</h4> 
     return (
         <>  
-            <InfoTableOrders ordersOzn={ordersOzn} allOrdersYandex={allOrdersYandex} logs={logs} productsOrdersBarcode={productsOrdersBarcode}/>
+            <InfoTableOrders ordersOzn={ordersOzn} allOrdersYandex={allOrdersYandex} logs={logs} productsOrdersBarcode={productsOrdersBarcode} allOrdersWB={allOrdersWB}/>
             <h5 onClick={() => {setBarcode('400175596448000')}}>{company}</h5>
             <tr className='warehouse'>
                 <th className='name-warehouse'><h6>СКЛАД:</h6></th>

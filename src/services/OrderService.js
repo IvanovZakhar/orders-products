@@ -173,8 +173,7 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
         return res.orders
     }
 
-    const getAllOrdersYandex = async (companyId) => { 
-      
+    const getAllOrdersYandex = async (companyId) => {  
         const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/yandex-orders/${companyId}`, 'GET');
             console.log(res)
         return res.orders

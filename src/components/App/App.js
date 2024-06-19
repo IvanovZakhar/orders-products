@@ -73,16 +73,13 @@ useEffect(() => {
 
     getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(setAllOrdersWB)
   }, [])
+  
 
   useEffect(() => {
     getAllProductsWarehouse().then(setProductsWarehouse)
-    getAllOrdersYandex(49023774).then(allOrders => {
-      getAllOrdersYandex(77640946).then(allOrdersLarge => {
-        const resOrdersLarge = allOrdersLarge.map(order => {return {...order, company: 'КГТ'}})  
-        getAllOrdersYandex(68501637).then(allOrdersComp => {
-          setAllOrdersYandex([...allOrders, ...resOrdersLarge, ...allOrdersComp])
-        })
-      })
+    getAllOrdersYandex(49023774).then(allOrders => { 
+          setAllOrdersYandex([...allOrders   ])
+      
     })
 
  
@@ -94,7 +91,7 @@ useEffect(() => {
  
  
 
- 
+ console.log(allOrdersWB)
  
 
 

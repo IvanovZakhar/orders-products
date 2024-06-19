@@ -77,21 +77,14 @@ useEffect(() => {
 
   useEffect(() => {
     getAllProductsWarehouse().then(setProductsWarehouse)
-    getAllOrdersYandex(49023774).then(allOrders => { 
-          setAllOrdersYandex([...allOrders   ])
-      
-    })
-
- 
-
-  getAllOrdersOZN().then(setOrdersOzn)
-  getAllPostingCanceled().then(setPostingCanceled)
+    getAllOrdersYandex(49023774).then(setAllOrdersYandex) 
+    getAllOrdersOZN().then(setOrdersOzn) 
 }, [])  
  
  
  
 
- console.log(allOrdersWB)
+ console.log(allOrdersYandex)
  
 
 

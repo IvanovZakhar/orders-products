@@ -112,18 +112,38 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
       }, [ordersOzn, logs, productsOrdersBarcode, allOrdersWB])
 
 
-    useEffect(() => {
-        const packedOrdersWB = allOrdersWB.filter(orderWb => {
-            const res = logs.filter(log => log.comment == orderWb.id)
-            if(!res.length){
-                return orderWb.id
+      useEffect(() => {
+        if(allOrdersWB){  
+            const packedOrdersWB = allOrdersWB.filter(orderWb => { 
+                const res = logs.filter(log => log.comment == orderWb.id)
+                if(!res.length){ 
+                    return true;
+                } 
+                return false;
+            })  
+            const orders = packedOrdersWB.map(order => order.id)
+ 
+            
+            // Разбиваем orders на части по 100 элементов
+            const chunkSize = 100;
+            const chunks = [];
+            for(let i = 0; i < orders.length; i += chunkSize) {
+                const chunkOrders = orders.slice(i, i + chunkSize);
+                chunks.push(getStickersWB([], JSON.stringify({'orders': chunkOrders})));
             }
-        }) 
-        const orders = packedOrdersWB.map(order => order.id)
-      
-        getStickersWB([], JSON.stringify({'orders': orders})).then(setOrdersNotPackedWb)
-
-    }, [allOrdersWB])
+    
+            // Ожидаем завершения всех асинхронных вызовов
+            Promise.all(chunks)
+                .then((values) => {
+                    // Объединение результатов (пример для сценария, когда результат - массив)
+                    const combinedResults = [].concat(...values); 
+                    setOrdersNotPackedWb(combinedResults);
+                })
+                .catch((error) => {
+                    console.error('Ошибка при обработке запросов:', error);
+                });
+        } 
+    }, [allOrdersWB, logs]);
     
  
 
@@ -140,6 +160,9 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                 return item
             }
         })   
+
+        console.log(packedOrdersYandex)
+
         function formatToDate(dateString) { 
             const dateParts = dateString.split('-');
             // Следим за порядком - [гггг, мм, дд]
@@ -167,15 +190,32 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
             const ordersYandex = ordersToday.filter(orders => !orders.company )
             
             // Выдаем полный список товаров. Вытаскивая из каждого заказа содержимое
-            const allOrdersLarge = ordersLarge.flatMap(order => order.items)
-            const allOrdersYandex = ordersYandex.flatMap(order => order.items)
+            const allOrdersLarge = ordersLarge.flatMap(order => {
+               
+                return order.items.map(item => {
+                    return {
+                        ...item,
+                        packed: order.packed === true ? true : false
+                    };
+                });
+            })
+            const allOrdersYandex = ordersYandex.flatMap(order => {
+               
+                return order.items.map(item => {
+                    return {
+                        ...item,
+                        packed: order.packed === true ? true : false
+                    };
+                });
+            })
  
             setOrdersLargeYandex(allOrdersLarge) 
             setOrdersYandex(allOrdersYandex)
  
-     
-            setOrdersYandexPacked(ordersYandex.filter(item => !item.packed))
-            setOrdersLargeYandexPacked(ordersLarge.filter(item => !item.packed))
+
+
+            setOrdersYandexPacked(allOrdersYandex.filter(item => !item.packed))
+            setOrdersLargeYandexPacked(allOrdersLarge.filter(item => !item.packed))
 
 
             const ordersTomorrow  = packedOrdersYandex.filter(order => { 
@@ -185,14 +225,31 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     return currentDate == tomorrowDate 
                 }
             })
+ 
         
             const ordersLargeTomorrow = ordersTomorrow.filter(orders => orders.company == 'КГТ') 
             const ordersYandexTomorrow = ordersTomorrow.filter(order => order.company === undefined) 
             // Выдаем полный список товаров. Вытаскивая из каждого заказа содержимое
-            const allOrdersLargeTomorrow = ordersLargeTomorrow.flatMap(order => order.items)
-            const allOrdersYandexTomorrow = ordersYandexTomorrow.flatMap(order => order.items)
-  
-
+            const allOrdersLargeTomorrow = ordersLargeTomorrow.flatMap(order => {
+               
+                return order.items.map(item => {
+                    return {
+                        ...item,
+                        packed: order.packed === true ? true : false
+                    };
+                });
+            });        
+            
+            const allOrdersYandexTomorrow = ordersYandexTomorrow.flatMap(order => {
+               
+                return order.items.map(item => {
+                    return {
+                        ...item,
+                        packed: order.packed === true ? true : false
+                    };
+                });
+            })
+           
             setOrdersYandexTomorrowPacked(allOrdersYandexTomorrow.filter(item => !item.packed))
             setOrdersLargeYandexTomorrowPacked(allOrdersLargeTomorrow.filter(item => !item.packed))
     
@@ -203,7 +260,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
           
         }
         
-      }, [allOrdersYandex])
+      }, [allOrdersYandex, logs])
  
 
     function getCurrentDate() {
@@ -314,7 +371,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     <h3>
                         Wildberries 
                         <div> 
-                            <Badge style={{fontSize: '20px'}} bg="primary"> {`${ordersNotPackedWb.length} / ∞`}</Badge>
+                            <Badge style={{fontSize: '20px'}} bg="primary"> {`${ordersNotPackedWb.length} / -`}</Badge>
                         </div>
                     </h3>
                 </ListGroup.Item>

@@ -16,7 +16,7 @@ import InfoTableOrders from '../InfoTableOrders/InfoTableOrders';
  
 
 function Table({props, date, setDate, onLoadingProduct, loading, setLoading, error, setCompany, warehouse, company,  logs, errorTable, ordersOzn, allOrdersYandex, productsOrdersBarcode, allOrdersWB}) {
-     console.log(props)
+    
     const [barcode, setBarcode] = useState('');
     const [onScanInitialized, setOnScanInitialized] = useState(false) 
     const [addedOrdersBarcode, setAddedOrdersBarcode] = useState([]) 
@@ -94,8 +94,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
                 setTimeout(() => {
                     window.location.reload();
                 }, 1500);
-              }).catch(er => {
-                console.log(er)
+              }).catch(er => { 
                 setModalOpen(false)
                 setStatusModalOpen(true)
                 setStatus('Ошибка!')

@@ -38,10 +38,12 @@ function App() {
         getAllOrders,
         getAllLogs,
         getAllOrdersWB,
+        getAllOrdersWBCMA,
         getAllOrdersOZN,
         getAllOrdersYandex, 
         clearError,
-        getAllPostingCanceled 
+        getAllPostingCanceled,
+        getOrderMegamarket
       } = useOrderService();
   const [allProducts, setAllProducts] = useState([])
   const [photoProducts, setPhotoProducts] = useState([])
@@ -71,7 +73,13 @@ useEffect(() => {
     weekLater.setDate(currentDate.getDate() + 2);
     
 
-    getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(setAllOrdersWB)
+    getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey)
+              .then(wbOrders => {
+                getAllOrdersWBCMA(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(wbCmaOrders => {
+                  setAllOrdersWB([...wbOrders, ...wbCmaOrders])
+                })
+        }) 
+
   }, [])
   
 
@@ -83,8 +91,7 @@ useEffect(() => {
  
  
  
-
- console.log(allOrdersYandex)
+ 
  
 
 
@@ -102,22 +109,19 @@ const onLoadingProduct = (barcode) => {
   if(barcode.slice(0, 3) !== 'OZN' && barcode.slice(0,3) !== 'ЩЯТ' && barcode !== '1110011' ){ 
       const resYandex = allOrdersYandex.filter(item => item.id == barcode) 
       const resOzn = ordersOzn.filter(item => item.barcode == barcode)
-      const resWB = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2))    
-
-
+      const resWB = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2))     
+      const resMegamarket = getOrderMegamarket(barcode).then(r => console.log(r)) 
       if(resYandex.length){ 
           setErrorTable(null)
           generateOrderInfoYandex (resYandex[0])
           setCompany('Яндекс')
           setWarehouse('Яндекс')
       }else if(resWB.length){  
-          setErrorTable(null) 
-          console.log(resWB)
+          setErrorTable(null)  
           generateOrderInfoWB(resWB)
           setCompany('WB') 
           setWarehouse('Уткина заводь')
-      }else if (resOzn.length){
-        console.log(resOzn)
+      }else if (resOzn.length){ 
         setErrorTable(null)
         generateOrderInfo(resOzn)
         setCompany(resOzn[0].company) 
@@ -175,8 +179,7 @@ function searchCanceledOrders (barcode) {
           const updatedProductsForOrders = productsForOrders.map(productOrder => {
               const newOrders = productOrder.orders.map(orderObject => {
                 
-                  if(orderObject.article.slice(0,2) == "AR"){
-                    console.log(orderObject.article.slice(0,8))
+                  if(orderObject.article.slice(0,2) == "AR"){ 
                     // Перебираем orders, фильтруем те, которые есть в productsWarehouse
                     const updatedOrders = productsWarehouse.filter(orderWarehouse => orderWarehouse.article.slice(0,8) == orderObject.article.slice(0,8))
                     
@@ -259,13 +262,11 @@ function searchCanceledOrders (barcode) {
       
   
       const updatedProductsForOrders = filteredOrders.map(productOrder => {
-        const newOrders = productOrder.orders.map(orderObject => {
-          console.log(orderObject.article.slice(0,8))
+        const newOrders = productOrder.orders.map(orderObject => { 
             if(orderObject.article.slice(0,2) == "AR"){
              
               // Перебираем orders, фильтруем те, которые есть в productsWarehouse
-              const updatedOrders = productsWarehouse.filter(orderWarehouse => orderWarehouse.article.slice(0,8) == orderObject.article.slice(0,8))
-              console.log(updatedOrders)
+              const updatedOrders = productsWarehouse.filter(orderWarehouse => orderWarehouse.article.slice(0,8) == orderObject.article.slice(0,8)) 
               // Возвращаем новый объект заказа с обновленным массивом orders
               return {
                 ...orderObject,
@@ -322,8 +323,7 @@ function searchCanceledOrders (barcode) {
     const updatedProductsForOrders = productsForOrders.map(productOrder => {
       const newOrders = productOrder.orders.map(orderObject => {
         
-          if(orderObject.article.slice(0,2) == "AR"){
-            console.log(orderObject.article.slice(0,8))
+          if(orderObject.article.slice(0,2) == "AR"){ 
             // Перебираем orders, фильтруем те, которые есть в productsWarehouse
             const updatedOrders = productsWarehouse.filter(orderWarehouse => orderWarehouse.article.slice(0,8) == orderObject.article.slice(0,8))
             

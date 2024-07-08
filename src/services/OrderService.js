@@ -47,11 +47,8 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
         return res.result.postings.map(transformProduct)
     }
 
-    const productBarcode = async (formData, headersOzon = headersDef) => { 
-        console.log(formData)
-        console.log(headersOzon)
-        const res = await request(`https://api-seller.ozon.ru/v2/posting/fbs/get-by-barcode`, 'POST', formData, headersOzon);
-        console.log(res)
+    const productBarcode = async (formData, headersOzon = headersDef) => {  
+        const res = await request(`https://api-seller.ozon.ru/v2/posting/fbs/get-by-barcode`, 'POST', formData, headersOzon); 
         res.result.products[0].posting_number = res.result.posting_number
         res.result.products[0].shipment_date = res.result.shipment_date 
         res.result.products[0].status = res.result.status
@@ -59,16 +56,13 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
     }
 
     const productBarcodeYandex = async (barcode) => {   
-       if(barcode.length <= 10){ 
-        console.log('send')
-        const res = await request(`${_url}/yandex-barcode/${barcode}`, 'GET', null);  
-        console.log(res)
+       if(barcode.length <= 10){  
+        const res = await request(`${_url}/yandex-barcode/${barcode}`, 'GET', null);   
         return res.order
        }
     }
 
-    const getStickersWB = async (apiKey, body) => {   
-        console.log(body)
+    const getStickersWB = async (apiKey, body) => {    
         const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/wb-stickers`, 'POST', body); 
         return res.stickers
     }
@@ -122,8 +116,7 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
 
  
     const getAllOrdersOZN = async () => {  
-        const res = await request(`${_url}/arsenal-orders`, 'GET' );  
-        console.log(res)
+        const res = await request(`${_url}/arsenal-orders`, 'GET' );   
         return res
     }
 
@@ -173,8 +166,22 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
         return res.orders
     }
 
+    const getAllOrdersWBCMA = async (dateFrom, dateTo, apiKey) => { 
+      
+        const unixDateFrom = getNewDate(dateFrom)
+        const unixDateTo = getNewDate(dateTo)
+        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/wbcma-orders/${unixDateFrom}/${unixDateTo}`, 'GET', null );
+     
+        return res.orders
+    }
+
     const getAllOrdersYandex = async (companyId) => {  
         const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/yandex-orders`, 'GET'); 
+        return res 
+    }
+
+    const getOrderMegamarket = async (orderId) => {  
+        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/megamarket-orders/${orderId}`, 'GET'); 
         return res 
     }
     
@@ -311,10 +318,12 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
             getAllLogs,
             getAllProductsWB,
             getAllOrdersWB, 
+            getAllOrdersWBCMA,
             getAllOrdersYandex,
             getAllOrdersOZN,
             getAllPostingCanceled,
-            getStickersWB  }
+            getStickersWB,
+            getOrderMegamarket  }
 
 }
 

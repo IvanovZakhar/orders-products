@@ -115,14 +115,11 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
       useEffect(() => {
         if(allOrdersWB){  
             const packedOrdersWB = allOrdersWB.filter(orderWb => { 
-                const res = logs.filter(log => log.comment == orderWb.id)
-                if(!res.length){ 
-                    return true;
-                } 
-                return false;
-            })  
-            const orders = packedOrdersWB.map(order => order.id)
- 
+                const res = logs.filter(log => log.comment == orderWb.id);
+                return res.length === 0; 
+            });  
+            
+            const orders = packedOrdersWB.map(order => order.id);
             
             // Разбиваем orders на части по 100 элементов
             const chunkSize = 100;
@@ -131,7 +128,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                 const chunkOrders = orders.slice(i, i + chunkSize);
                 chunks.push(getStickersWB([], JSON.stringify({'orders': chunkOrders})));
             }
-    
+            
             // Ожидаем завершения всех асинхронных вызовов
             Promise.all(chunks)
                 .then((values) => {
@@ -144,6 +141,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                 });
         } 
     }, [allOrdersWB, logs]);
+    
     
  
 

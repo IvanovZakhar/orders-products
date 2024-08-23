@@ -161,7 +161,7 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
       
         const unixDateFrom = getNewDate(dateFrom)
         const unixDateTo = getNewDate(dateTo)
-        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/wb-orders/${unixDateFrom}/${unixDateTo}`, 'GET', null );
+        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/wbmd-orders/${unixDateFrom}/${unixDateTo}`, 'GET', null );
      
         return res.orders
     }

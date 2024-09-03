@@ -116,11 +116,11 @@ const onLoadingProduct = (barcode) => {
           generateOrderInfoYandex (resYandex[0])
           setCompany('Яндекс')
           setWarehouse('Яндекс')
-      }else if(resWB.length){  
+      }else if(resWB.length){     
           setErrorTable(null)  
           generateOrderInfoWB(resWB)
           setCompany('WB') 
-          setWarehouse('Уткина заводь')
+          setWarehouse(resWB[0].warehouseId === 1046560 && resWB[0].warehouseId === 1088352 ? 'Уткина заводь' : 'Шушары')
       }else if (resOzn.length){ 
         setErrorTable(null)
         generateOrderInfo(resOzn)

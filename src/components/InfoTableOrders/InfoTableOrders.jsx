@@ -9,17 +9,17 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
      
 
     const [ordersCMA, setOrdersCMA] = useState([])
-    const [ordersArsenal, setOrdersArsenal] = useState([])
+    const [ordersMD, setOrdersMD] = useState([])
     const [ordersPargolovo, setOrdersPargolovo] = useState([]) 
     const [ordersCMAPacked, setOrdersCMAPacked] = useState([])
-    const [ordersArsenalPacked, setOrdersArsenalPacked] = useState([])
+    const [ordersMDPacked, setOrdersMDPacked] = useState([])
     const [ordersPargolovoPacked, setOrdersPargolovoPacked] = useState([]) 
     const [ordersToday, setOrdersToday] = useState([]) 
     const [ordersCMATomorrow , setOrdersCMATomorrow ] = useState([])
-    const [ordersArsenalTomorrow , setOrdersArsenalTomorrow ] = useState([])
+    const [ordersMDTomorrow , setOrdersMDTomorrow ] = useState([])
     const [ordersPargolovoTomorrow , setOrdersPargolovoTomorrow ] = useState([]) 
     const [ordersCMATomorrowPacked , setOrdersCMATomorrowPacked ] = useState([])
-    const [ordersArsenalTomorrowPacked , setOrdersArsenalTomorrowPacked ] = useState([])
+    const [ordersMDTomorrowPacked , setOrdersMDTomorrowPacked ] = useState([])
     const [ordersPargolovoTomorrowPacked , setOrdersPargolovoTomorrowPacked ] = useState([]) 
     const [ordersTomorrow , setOrdersTomorrow ] = useState([]) 
     const [ordersLargeYandex, setOrdersLargeYandex] = useState([])
@@ -55,9 +55,9 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
             const ordersPargolovo = ordersToday.filter(order => order.warehouse.slice(0, 9).toLowerCase() == "парголово")
             const orders = ordersToday.filter(order => order.warehouse.slice(0, 9).toLowerCase() !== "парголово")
             const ordersCMA = orders.filter(order => order.company == "ЦМА")
-            const ordersArsenal = orders.filter(order => order.company == "Арсенал")
+            const ordersMD = orders.filter(order => order.company == "MD")
             setOrdersCMA(ordersCMA)
-            setOrdersArsenal(ordersArsenal)
+            setOrdersMD(ordersMD)
             setOrdersPargolovo(ordersPargolovo)
             setOrdersToday(ordersToday)
             setOrdersCMAPacked(ordersCMA.filter(order => {
@@ -66,7 +66,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     return order
                 }
             }).filter(item => !item.packed))
-            setOrdersArsenalPacked(ordersArsenal.filter(order => {
+            setOrdersMDPacked(ordersMD.filter(order => {
                 const res = productsOrdersBarcode.filter(item => item.article == order.offer_id)
                 if(res.length){
                     return order
@@ -83,9 +83,9 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
             const ordersPargolovoTomorrow  = ordersTomorrow.filter(order => order.warehouse.slice(0, 9).toLowerCase() == "парголово") 
             const ordersLarge  = ordersTomorrow.filter(order => order.warehouse.slice(0, 9).toLowerCase() !== "парголово")
             const ordersCMATomorrow  = ordersLarge.filter(order => order.company == "ЦМА")
-            const ordersArsenalTomorrow  = ordersLarge.filter(order => order.company == "Арсенал")
+            const ordersMDTomorrow  = ordersLarge.filter(order => order.company == "MD")
             setOrdersCMATomorrow (ordersCMATomorrow )
-            setOrdersArsenalTomorrow ( ordersArsenalTomorrow)
+            setOrdersMDTomorrow ( ordersMDTomorrow)
             setOrdersPargolovoTomorrow (ordersPargolovoTomorrow)
             setOrdersCMATomorrowPacked (ordersCMATomorrow.filter(order => {
                 const res = productsOrdersBarcode.filter(item => item.article == order.offer_id)
@@ -93,7 +93,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     return order
                 }
             }).filter(item => !item.packed))
-            setOrdersArsenalTomorrowPacked ( ordersArsenalTomorrow.filter(order => {
+            setOrdersMDTomorrowPacked ( ordersMDTomorrow.filter(order => {
                 const res = productsOrdersBarcode.filter(item => item.article == order.offer_id)
                 if(res.length){
                     return order
@@ -335,9 +335,9 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                 </ListGroup.Item>
                 <ListGroup.Item>
                     <h3>
-                        Арсенал 
+                        MD 
                         <div> 
-                            <Badge style={{fontSize: '20px'}} bg="success">{`${ordersArsenalPacked.length} / ${ordersArsenal.length}`}</Badge> 
+                            <Badge style={{fontSize: '20px'}} bg="success">{`${ordersMDPacked.length} / ${ordersMD.length}`}</Badge> 
                         </div>
                     </h3>
                 </ListGroup.Item>
@@ -408,9 +408,9 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                 </ListGroup.Item>
                 <ListGroup.Item>
                     <h3>
-                        Арсенал 
+                        MD 
                         <div> 
-                            <Badge style={{fontSize: '20px'}} bg="success">{ `${ordersArsenalTomorrowPacked.length} / ${ordersArsenalTomorrow .length}`}</Badge>
+                            <Badge style={{fontSize: '20px'}} bg="success">{ `${ordersMDTomorrowPacked.length} / ${ordersMDTomorrow .length}`}</Badge>
                         </div>
                     </h3>
                 </ListGroup.Item>

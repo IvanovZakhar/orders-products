@@ -46,6 +46,14 @@ const PrintBarcode = ({photoProducts, productsWarehouse}) => {
        
     }, [])
 
+    useEffect(() => {
+      console.log('photoProducts:', photoProducts);
+      console.log('newProducts до фильтрации:', photoProducts);
+      const newProductsFiltered = photoProducts.filter(product => product.article.slice(0, 4) === 'AR19');
+      console.log('newProducts после фильтрации:', newProductsFiltered);
+    }, [photoProducts]);
+    
+
 
     useEffect(() => {
       let lastScanTime = 0;
@@ -60,7 +68,7 @@ const PrintBarcode = ({photoProducts, productsWarehouse}) => {
         }
     
         lastScanTime = currentTime;
-    
+        
         // Ваш обработчик события scanCode
         if(scanCode.slice(0,3) === 'OZN' || scanCode.slice(0,3) === 'BAR'  || scanCode.slice(0,1) === '2'){
           setModalOpen(true)
@@ -69,6 +77,7 @@ const PrintBarcode = ({photoProducts, productsWarehouse}) => {
         if(scanCode === 'print222'){ 
           setPrintName(prevPrint => {
             printBarcode(prevPrint, 1).then(() => {
+            
               setModalOpen(false)
             })
             return prevPrint
@@ -128,7 +137,7 @@ const PrintBarcode = ({photoProducts, productsWarehouse}) => {
      
   }, []);
 
-    useEffect(() => {
+    useEffect(() => { 
         const res = products.filter(product => product.barcode.slice(3,10) === printName.slice(3, 10))
        setPhoto(res[0])
     }, [printName])
@@ -167,23 +176,23 @@ const PrintBarcode = ({photoProducts, productsWarehouse}) => {
     // }); 
     console.log(photoProducts)
 
-    const newProducts = photoProducts.filter(product => product.article.slice(0, 4) == 'AR16')
+    const newProducts = photoProducts.filter(product => product.article.slice(0, 4) == 'AR19')
     
     console.log(newProducts)
     return(
        
  
-            <Row>
-                 {/* <h1>Выберите штрихкод для ПЕЧАТИ</h1> */}
+            <Row> 
                  <ModalPrint modalOpen={modalOpen} setModalOpen={setModalOpen} photo={photo} printName={printName}/>
                   {newProducts.map((product, i) => {
+                    console.log(newProducts)
                     const {article, main_photo_link, name_of_product, barcode, barcode_serial_number_ean} = product 
                   
                     if(barcode_serial_number_ean){
 
                       return(
-                        <Card style={{ width: '20rem', height: '525px', marginLeft: '70px',  marginTop: '20px' }}>
-                          <Card.Img variant="top" src={main_photo_link} style={{ width: '120px' }}/>
+                        <Card style={{ width: '20rem', height: '525px', marginLeft: '70px',  marginTop: '20px' }}> 
+                          <Card.Img variant="top" src={main_photo_link} style={{ width: '150px' }}/>
                           <Card.Body style={{padding: '0'}}>
                             <Card.Title style={{fontWeight: 'bold'}}>{article}</Card.Title>
                             <Card.Title>{name_of_product.slice(0, 100)}</Card.Title>

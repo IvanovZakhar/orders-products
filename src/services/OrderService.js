@@ -3,7 +3,7 @@ import {useHttp} from '../hooks/http.hook';
 const useOrderService = () => {
     const {loading, request, error, clearError, setLoading} = useHttp();
 
-    const _url = "https://f9fd09879062.vps.myjino.ru:49256"
+    const _url = "https://ced1fd25fcf8.vps.myjino.ru:49191"
    const headersDef = {  
         'Client-Id': '' ,
         'Api-Key': ''
@@ -63,7 +63,7 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
     }
 
     const getStickersWB = async (apiKey, body) => {    
-        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/wb-stickers`, 'POST', body); 
+        const res = await request(`https://ced1fd25fcf8.vps.myjino.ru:49191/wb-stickers`, 'POST', body); 
         return res.stickers
     }
 
@@ -148,12 +148,10 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
     
 
      const printBarcode = async (barcode, quantity) => {
-        
-        const res = await request(
-                                    `http://localhost:3001/print?filename=${barcode}&copies=${quantity}`, 
-                                    'GET' 
+        // Временное решение на 03.02.2025 Баг на складском компе
+        const res =  fetch(   `http://localhost:3001/print?filename=${barcode}&copies=${quantity}` 
                                     )
-      
+        console.log(res)
         return res
     }
  
@@ -161,27 +159,36 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
       
         const unixDateFrom = getNewDate(dateFrom)
         const unixDateTo = getNewDate(dateTo)
-        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/wbmd-orders/${unixDateFrom}/${unixDateTo}`, 'GET', null );
+        const res = await request(`https://ced1fd25fcf8.vps.myjino.ru:49191/wbmd-orders/${unixDateFrom}/${unixDateTo}`, 'GET', null );
      
         return res.orders
+    }
+
+    const getAllOrdersWBArsenal = async (dateFrom, dateTo, apiKey) => { 
+      
+        const unixDateFrom = getNewDate(dateFrom)
+        const unixDateTo = getNewDate(dateTo)
+        const res = await request(`https://ced1fd25fcf8.vps.myjino.ru:49191/wbarsenal-neworders`, 'GET', null );
+        console.log(res)
+        return res
     }
 
     const getAllOrdersWBCMA = async (dateFrom, dateTo, apiKey) => { 
       
         const unixDateFrom = getNewDate(dateFrom)
         const unixDateTo = getNewDate(dateTo)
-        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/wbcma-orders/${unixDateFrom}/${unixDateTo}`, 'GET', null );
+        const res = await request(`https://ced1fd25fcf8.vps.myjino.ru:49191/wbcma-orders/${unixDateFrom}/${unixDateTo}`, 'GET', null );
      
         return res.orders
     }
 
     const getAllOrdersYandex = async (companyId) => {  
-        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/yandex-orders`, 'GET'); 
+        const res = await request(`https://ced1fd25fcf8.vps.myjino.ru:49191/yandex-orders`, 'GET'); 
         return res 
     }
 
-    const getOrderMegamarket = async (orderId) => {  
-        const res = await request(`https://f9fd09879062.vps.myjino.ru:49256/megamarket-orders/${orderId}`, 'GET'); 
+    const getAllOrderMegamarket = async (orderId) => {  
+        const res = await request(`https://ced1fd25fcf8.vps.myjino.ru:49191/megamarket-orders`, 'GET'); 
         return res 
     }
     
@@ -244,7 +251,6 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
             'POST', 
             JSON.stringify(data) 
             )
-
         return res
     }
 
@@ -323,7 +329,8 @@ const nextWeekFormattedDate = nextWeekDateTime.toISOString().slice(0, 19) + 'Z';
             getAllOrdersOZN,
             getAllPostingCanceled,
             getStickersWB,
-            getOrderMegamarket  }
+            getAllOrderMegamarket,
+            getAllOrdersWBArsenal  }
 
 }
 

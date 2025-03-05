@@ -10,9 +10,11 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
 
     const [ordersCMA, setOrdersCMA] = useState([])
     const [ordersMD, setOrdersMD] = useState([])
+    const [ordersArsenal, setOrdersArsenal] = useState([])
     const [ordersPargolovo, setOrdersPargolovo] = useState([]) 
     const [ordersCMAPacked, setOrdersCMAPacked] = useState([])
     const [ordersMDPacked, setOrdersMDPacked] = useState([])
+    const [ordersArsenalPacked, setOrdersArsenalPacked] = useState([])
     const [ordersPargolovoPacked, setOrdersPargolovoPacked] = useState([]) 
     const [ordersToday, setOrdersToday] = useState([]) 
     const [ordersCMATomorrow , setOrdersCMATomorrow ] = useState([])
@@ -21,6 +23,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
     const [ordersCMATomorrowPacked , setOrdersCMATomorrowPacked ] = useState([])
     const [ordersMDTomorrowPacked , setOrdersMDTomorrowPacked ] = useState([])
     const [ordersPargolovoTomorrowPacked , setOrdersPargolovoTomorrowPacked ] = useState([]) 
+    const [ordersArsenalTomorrow, setOrdersArsenalTomorrow] = useState([])
     const [ordersTomorrow , setOrdersTomorrow ] = useState([]) 
     const [ordersLargeYandex, setOrdersLargeYandex] = useState([])
     const [ordersYandex, setOrdersYandex] = useState([])
@@ -30,6 +33,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
     const [ordersYandexTomorrow, setOrdersYandexTomorrow] = useState([]) 
     const [ordersLargeYandexTomorrowPacked, setOrdersLargeYandexTomorrowPacked] = useState([])
     const [ordersYandexTomorrowPacked, setOrdersYandexTomorrowPacked] = useState([])
+    const [ordersArsenalTomorrowPacked,setOrdersArsenalTomorrowPacked] = useState([])
     const [ordersNotPackedWb, setOrdersNotPackedWb] = useState([])
     const {getStickersWB} = useOrderService()
 
@@ -46,18 +50,20 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
               return item
             }
           }) 
-          
-
+           
+        
         const dateToday = getCurrentDate()
         const dateTomorrow = getTomorrowDate()
-        if(ordersOzn.length){
-            const ordersToday = packedOrdersOzn.filter(order => order.shipment_date.slice(0, 10) == dateToday) 
-            const ordersPargolovo = ordersToday.filter(order => order.warehouse.slice(0, 9).toLowerCase() == "парголово")
-            const orders = ordersToday.filter(order => order.warehouse.slice(0, 9).toLowerCase() !== "парголово")
+        if(ordersOzn.length){ 
+            const ordersToday = packedOrdersOzn.filter(order => order.deliveryDate.slice(0, 10) == dateToday) 
+            const ordersPargolovo = ordersToday.filter(order => order.warehouse.slice(0, 6).toLowerCase() == "шушары")
+            const orders = ordersToday.filter(order => order.warehouse.slice(0, 6).toLowerCase() !== "шушары")
             const ordersCMA = orders.filter(order => order.company == "ЦМА")
             const ordersMD = orders.filter(order => order.company == "MD")
+            const ordersArsenal = orders.filter(order => order.company == "Арсенал")
             setOrdersCMA(ordersCMA)
             setOrdersMD(ordersMD)
+            setOrdersArsenal(ordersArsenal)
             setOrdersPargolovo(ordersPargolovo)
             setOrdersToday(ordersToday)
             setOrdersCMAPacked(ordersCMA.filter(order => {
@@ -72,6 +78,12 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                     return order
                 }
             }).filter(item => !item.packed))
+            setOrdersArsenalPacked(ordersMD.filter(order => {
+                const res = productsOrdersBarcode.filter(item => item.article == order.offer_id)
+                if(res.length){
+                    return order
+                }
+            }).filter(item => !item.packed))
             setOrdersPargolovoPacked(ordersPargolovo.filter(order => {
                 const res = productsOrdersBarcode.filter(item => item.article == order.offer_id)
                 if(res.length){
@@ -79,13 +91,15 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                 }
             }).filter(item => !item.packed))
 
-            const ordersTomorrow = packedOrdersOzn.filter(order => order.shipment_date.slice(0, 10) == dateTomorrow) 
-            const ordersPargolovoTomorrow  = ordersTomorrow.filter(order => order.warehouse.slice(0, 9).toLowerCase() == "парголово") 
-            const ordersLarge  = ordersTomorrow.filter(order => order.warehouse.slice(0, 9).toLowerCase() !== "парголово")
+            const ordersTomorrow = packedOrdersOzn.filter(order => order.deliveryDate.slice(0, 10) == dateTomorrow) 
+            const ordersPargolovoTomorrow  = ordersTomorrow.filter(order => order.warehouse.slice(0, 6).toLowerCase() == "шушары") 
+            const ordersLarge  = ordersTomorrow.filter(order => order.warehouse.slice(0, 6).toLowerCase() !== "шушары")
             const ordersCMATomorrow  = ordersLarge.filter(order => order.company == "ЦМА")
             const ordersMDTomorrow  = ordersLarge.filter(order => order.company == "MD")
+            const ordersArsenalTomorrow  = ordersLarge.filter(order => order.company == "Арсенал")
             setOrdersCMATomorrow (ordersCMATomorrow )
             setOrdersMDTomorrow ( ordersMDTomorrow)
+            setOrdersArsenalTomorrow ( ordersArsenalTomorrow)
             setOrdersPargolovoTomorrow (ordersPargolovoTomorrow)
             setOrdersCMATomorrowPacked (ordersCMATomorrow.filter(order => {
                 const res = productsOrdersBarcode.filter(item => item.article == order.offer_id)
@@ -94,6 +108,12 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                 }
             }).filter(item => !item.packed))
             setOrdersMDTomorrowPacked ( ordersMDTomorrow.filter(order => {
+                const res = productsOrdersBarcode.filter(item => item.article == order.offer_id)
+                if(res.length){
+                    return order
+                }
+            }).filter(item => !item.packed))
+            setOrdersArsenalTomorrowPacked ( ordersArsenalTomorrow.filter(order => {
                 const res = productsOrdersBarcode.filter(item => item.article == order.offer_id)
                 if(res.length){
                     return order
@@ -112,35 +132,35 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
       }, [ordersOzn, logs, productsOrdersBarcode, allOrdersWB])
 
 
-      useEffect(() => {
-        if(allOrdersWB){  
-            const packedOrdersWB = allOrdersWB.filter(orderWb => { 
-                const res = logs.filter(log => log.comment == orderWb.id);
-                return res.length === 0; 
-            });  
+    //   useEffect(() => {
+    //     if(allOrdersWB){  
+    //         const packedOrdersWB = allOrdersWB.filter(orderWb => { 
+    //             const res = logs.filter(log => log.comment == orderWb.id);
+    //             return res.length === 0; 
+    //         });  
             
-            const orders = packedOrdersWB.map(order => order.id);
+    //         const orders = packedOrdersWB.map(order => order.id);
             
-            // Разбиваем orders на части по 100 элементов
-            const chunkSize = 100;
-            const chunks = [];
-            for(let i = 0; i < orders.length; i += chunkSize) {
-                const chunkOrders = orders.slice(i, i + chunkSize);
-                chunks.push(getStickersWB([], JSON.stringify({'orders': chunkOrders})));
-            }
+    //         // Разбиваем orders на части по 100 элементов
+    //         const chunkSize = 100;
+    //         const chunks = [];
+    //         for(let i = 0; i < orders.length; i += chunkSize) {
+    //             const chunkOrders = orders.slice(i, i + chunkSize);
+    //             chunks.push(getStickersWB([], JSON.stringify({'orders': chunkOrders})));
+    //         }
             
-            // Ожидаем завершения всех асинхронных вызовов
-            Promise.all(chunks)
-                .then((values) => {
-                    // Объединение результатов (пример для сценария, когда результат - массив)
-                    const combinedResults = [].concat(...values); 
-                    setOrdersNotPackedWb(combinedResults);
-                })
-                .catch((error) => {
-                    console.error('Ошибка при обработке запросов:', error);
-                });
-        } 
-    }, [allOrdersWB, logs]);
+    //         // Ожидаем завершения всех асинхронных вызовов
+    //         Promise.all(chunks)
+    //             .then((values) => {
+    //                 // Объединение результатов (пример для сценария, когда результат - массив)
+    //                 const combinedResults = [].concat(...values); 
+    //                 setOrdersNotPackedWb(combinedResults);
+    //             })
+    //             .catch((error) => {
+    //                 console.error('Ошибка при обработке запросов:', error);
+    //             });
+    //     } 
+    // }, [allOrdersWB, logs]);
     
     
  
@@ -158,8 +178,7 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                 return item
             }
         })   
-
-        console.log(packedOrdersYandex)
+ 
 
         function formatToDate(dateString) { 
             const dateParts = dateString.split('-');
@@ -322,8 +341,17 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                             </span>
                         </Badge>
                      </ListGroup.Item>
-         
                 <ListGroup.Item>
+                  
+                  <h3>
+                     Арсенал
+                      <div>   
+                          <Badge style={{fontSize: '20px'}} bg="success">{`${ordersArsenalPacked.length} / ${ordersArsenal.length}`}</Badge> 
+                        
+                      </div>
+                  </h3>
+              </ListGroup.Item>
+                {/* <ListGroup.Item>
                   
                     <h3>
                         ЦМА 
@@ -332,18 +360,18 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                           
                         </div>
                     </h3>
-                </ListGroup.Item>
-                <ListGroup.Item>
+                </ListGroup.Item> */}
+                {/* <ListGroup.Item>
                     <h3>
                         MD 
                         <div> 
                             <Badge style={{fontSize: '20px'}} bg="success">{`${ordersMDPacked.length} / ${ordersMD.length}`}</Badge> 
                         </div>
                     </h3>
-                </ListGroup.Item>
+                </ListGroup.Item> */}
                 <ListGroup.Item>
                     <h3>
-                        Парголово 
+                        Шушары Оз 
                         <div> 
                             <Badge style={{fontSize: '20px'}} bg="primary">{`${ordersPargolovoPacked.length} / ${ordersPargolovo.length}`}</Badge> 
                         </div>
@@ -396,8 +424,16 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                         </span>
                     </Badge>
                 </ListGroup.Item>
-                   
                 <ListGroup.Item > 
+                  
+                  <h3>
+                     Арсенал
+                      <div> 
+                          <Badge style={{fontSize: '20px'}} bg="success">{ `${ordersArsenalTomorrowPacked.length} / ${ordersArsenalTomorrow.length}`} </Badge>
+                      </div>
+                  </h3>
+              </ListGroup.Item>
+                {/* <ListGroup.Item > 
                   
                     <h3>
                         ЦМА 
@@ -405,18 +441,18 @@ const InfoTableOrders = ({ordersOzn, allOrdersYandex, logs, productsOrdersBarcod
                             <Badge style={{fontSize: '20px'}} bg="success">{ `${ordersCMATomorrowPacked.length} / ${ordersCMATomorrow.length}`} </Badge>
                         </div>
                     </h3>
-                </ListGroup.Item>
-                <ListGroup.Item>
+                </ListGroup.Item> */}
+                {/* <ListGroup.Item>
                     <h3>
                         MD 
                         <div> 
                             <Badge style={{fontSize: '20px'}} bg="success">{ `${ordersMDTomorrowPacked.length} / ${ordersMDTomorrow .length}`}</Badge>
                         </div>
                     </h3>
-                </ListGroup.Item>
+                </ListGroup.Item> */}
                 <ListGroup.Item>
                     <h3>
-                        Парголово 
+                        Шушары Оз
                         <div> 
                             <Badge style={{fontSize: '20px'}} bg="primary"> {`${ordersPargolovoTomorrowPacked.length} / ${ordersPargolovoTomorrow .length}`}</Badge>
                         </div>

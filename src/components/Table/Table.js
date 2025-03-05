@@ -85,12 +85,14 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
             const scanCode = e.detail.scanCode;
             setBarcode(scanCode); 
             if (scanCode === 'SEND111') {  
+                console.log(newOrders)
               updateProductQuantity({ comment: `${numberPosting}`, productsToUpdate: newOrders })
-                .then((res) => {  
+                .then((res) => { 
+                    console.log(res) 
                 setModalOpen(false);
                 setStatusModalOpen(true)
                 setStatus('Успешно!')
-               // Задержка перед перезагрузкой страницы
+            //    // Задержка перед перезагрузкой страницы
                 setTimeout(() => {
                     window.location.reload();
                 }, 1500);
@@ -149,6 +151,8 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
         }) 
         setNewDataOrders(updateData)
     }, [dataOrders])   
+
+    console.log(newOrders)
     useEffect(() => {
         if (!onScanInitialized) {
         onScan.attachTo(document);
@@ -203,7 +207,8 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
                 Column17, Column18, Column19, Column20, Column22, 
                 Column23, Column24, Column25, Station, article, 
                 date, eyelet, height, loops, name, number_of_roll, postingNumber,
-               price, roll, screws, weight, width, Column21, quantity, photo, warehouse} = prop; 
+               price, roll, screws, weight, width, Column21, quantity, photo, warehouse, status} = prop; 
+               console.log(prop)
            const packed = logs.length ? logs.find(log => log.comment == postingNumber) : null   
            return (
                <div className='main-table'>
@@ -333,29 +338,29 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
                   <div className='card-item'> 
                      
                        <Container > 
-                           {prop.orders.length ? <h2 style={{color: 'grey'}}>Отсканируйте штрихкоды:</h2> : null}
+                          <h2 style={{color: 'grey'}}>Информация о заказе:</h2>
                            <Row>
-                               {packed ? <h2 style={{color: 'green'}}>Упакован!</h2> : dataOrders.map(item => {  
+                               {status === 'awaiting_deliver' ? dataOrders.length ? dataOrders.map(item => {  
                                    return( 
                                        <Col>
                                            <Card style={{ width: '18rem'  }}>
                                                 <span style={{fontWeight: 'bold', margin: '0 auto', fontSize: '24px'}}>На складе:  <Badge bg="success" style={{fontSize: '25px'}}> {item.quantityWarehouse}</Badge></span>
                                                <Card.Img variant="top" style={{width: '150px', height: '150px', margin: '0 auto'}} src={item.main_photo_link} />
-                                               <Card.Body>
-                                                   <Card.Title style={{fontWeight: 'bold'}}>{item.article}</Card.Title>
+                                               <Card.Body> 
                                                    <Card.Text style={{lineHeight: '18px'}}>
                                                        {item.name_of_product}
                                                    </Card.Text>
                                                </Card.Body>
-                                               <Col style={{display: 'flex', justifyContent: 'center'}}>
-                                                   <Badge bg={`${item.success ? "success":"secondary"}`} style={{fontSize: '25px'}}> {item.quantity}</Badge> 
+                                               <Col style={{display: 'flex', justifyContent: 'center', fontWeight: 'bold', margin: '0 auto', fontSize: '24px'}}>
+                                               Соберите:  
+                                                   <Badge bg={`${item.success ? "success":"secondary"}`} style={{fontSize: '25px', marginLeft: '7px'}}> {item.quantity}</Badge> 
                                                
                                                </Col>
                                            </Card>
                                        </Col>
                                            )
                                    
-                               })}
+                               }): <h2 style={{color: 'black'}}>Не упакован</h2>:  <h2 style={{color: 'green'}}>Упакован!</h2> }
                            </Row>
                       </Container>
                       <h2>  {Column22}</h2>    
@@ -379,7 +384,7 @@ function Table({props, date, setDate, onLoadingProduct, loading, setLoading, err
                 <th className='address'><h6>{`${warehouse.slice(0, 8)}`}</h6></th>
             </tr>
             <tr className='warehouse'>
-                <th className='name-warehouse__quantity'><h6  >Общ.кол-во   </h6></th>
+                <th className='name-warehouse__quantity'><h6  >Кол.товаров:</h6></th>
                 <th className='address'><h6>{`${props.length}`}</h6></th>
             </tr>  
             {  loading ? <GetSpinner/> : Order}  

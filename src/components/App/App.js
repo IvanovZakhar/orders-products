@@ -19,6 +19,7 @@ function App() {
   const [date, setDate] = useState(''); 
   const [allOrders, setAllOrders] = useState([])
   const [allOrdersWB, setAllOrdersWB] = useState([])
+  const [allOrdersMega, setAllOrdersMega] = useState([])
   const [logs, setLogs] = useState([])
   const [errorTable, setErrorTable] = useState(null)
   const [CanceledProduct, setCanceledProduct] = useState(null)
@@ -43,7 +44,8 @@ function App() {
         getAllOrdersYandex, 
         clearError,
         getAllPostingCanceled,
-        getOrderMegamarket
+        getAllOrderMegamarket,
+        getAllOrdersWBArsenal
       } = useOrderService();
   const [allProducts, setAllProducts] = useState([])
   const [photoProducts, setPhotoProducts] = useState([])
@@ -53,6 +55,11 @@ function App() {
   const [ordersOzn, setOrdersOzn] = useState([]) 
   const [postingCanceled, setPostingCanceled] = useState([]) 
 
+
+useEffect(() => {
+  localStorage.apiData = JSON.stringify([{"id":1,"name":"Арсенал","clientId":"2003701","apiKey":"04bb6f6e-a3b0-4aba-b880-73c710f0a7a6"},{"id":6,"name":"MD","clientId":"2323094","apiKey":"689da05d-0930-4b0e-8cd0-00057d823eb0"},{"id":7,"name":"WBARSENAL","clientId":"3","apiKey":""},{"id":8,"name":"WBMD","clientId":"4","apiKey":""},{"id":7,"name":"Яндекс","clientId":"124786038","apiKey":""},{"id":9,"name":"Яндекс КГТ","clientId":"124880448","apiKey":""}])
+  document.body.style.zoom = "50%";
+}, [])
 
     // Устанавливаем продукты для нарядов с базы
 useEffect(() => {
@@ -73,12 +80,12 @@ useEffect(() => {
     weekLater.setDate(currentDate.getDate() + 2);
     
 
-    getAllOrdersWB(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey)
-              .then(wbOrders => {
-                getAllOrdersWBCMA(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(wbCmaOrders => {
-                  setAllOrdersWB([...wbOrders, ...wbCmaOrders])
-                })
-        }) 
+ 
+      getAllOrdersWBArsenal(weekAgo.toISOString().split('T')[0], weekLater.toISOString().split('T')[0], JSON.parse(localStorage.apiData)[2].apiKey).then(wbArsenalOrders => {
+      
+        setAllOrdersWB(wbArsenalOrders) 
+      }) 
+       
 
   }, [])
   
@@ -87,6 +94,7 @@ useEffect(() => {
     getAllProductsWarehouse().then(setProductsWarehouse)
     getAllOrdersYandex(49023774).then(setAllOrdersYandex) 
     getAllOrdersOZN().then(setOrdersOzn) 
+    getAllOrderMegamarket().then(setAllOrdersMega)
 }, [])  
  
  
@@ -103,14 +111,15 @@ useEffect(() => {
  
   const onLoadingProducts = (data = localStorage.data) => {
  
-   };
+   }; 
   
 const onLoadingProduct = (barcode) => {   
   if(barcode.slice(0, 3) !== 'OZN' && barcode.slice(0,3) !== 'ЩЯТ' && barcode !== '1110011' ){ 
       const resYandex = allOrdersYandex.filter(item => item.id == barcode) 
       const resOzn = ordersOzn.filter(item => item.barcode == barcode)
-      const resWB = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2))     
-      const resMegamarket = getOrderMegamarket(barcode).then(r => console.log(r)) 
+      const resWB = allOrdersWB.filter(orderWB => orderWB.id === +barcode.slice(2))  
+       
+      const resMegamarket = allOrdersMega.filter(item=> item.orderId == barcode)  
       if(resYandex.length){ 
           setErrorTable(null)
           generateOrderInfoYandex (resYandex[0])
@@ -120,13 +129,18 @@ const onLoadingProduct = (barcode) => {
           setErrorTable(null)  
           generateOrderInfoWB(resWB)
           setCompany('WB') 
-          setWarehouse(resWB[0].warehouseId === 1046560 && resWB[0].warehouseId === 1088352 ? 'Уткина заводь' : 'Шушары')
+          setWarehouse(resWB[0].warehouseId === 1129665 && resWB[0].warehouseId === 1088352 ? 'Уткина заводь' : 'Шушары')
       }else if (resOzn.length){ 
         setErrorTable(null)
         generateOrderInfo(resOzn)
         setCompany(resOzn[0].company) 
         setWarehouse(resOzn[0].warehouse)
-      }else{ 
+      }else if (resMegamarket.length){ 
+        setErrorTable(null)
+        generateOrderInfoMega(resMegamarket)
+        setCompany('Мегамаркет')
+        setWarehouse('Самовывоз')
+    }else{ 
         setLoading(true) 
         searchCanceledOrders(barcode) 
       }
@@ -194,7 +208,7 @@ function searchCanceledOrders (barcode) {
                     // Возвращаем новый объект заказа с обновленным массивом orders
                     return {
                       ...orderObject,
-                      quantityWarehouse: updatedOrders[0].quantity
+                      quantityWarehouse: updatedOrders[0].quantity 
                     }
                   }
                   
@@ -202,10 +216,10 @@ function searchCanceledOrders (barcode) {
 
           return{
             ...productOrder,
-            orders: newOrders
+            orders: newOrders 
           }
       })
-   
+   console.log(updatedProductsForOrders)
       
       let combinedOrders = [];
       if (updatedProductsForOrders.length) {
@@ -224,7 +238,7 @@ function searchCanceledOrders (barcode) {
           })
         );
       }  
-
+      console.log(updatedProductsForOrders)
        
       const product = productMap.get(offerId);
       if (product) {
@@ -237,7 +251,8 @@ function searchCanceledOrders (barcode) {
         
         return {
           ...product,
-          orders: combinedOrders
+          orders: combinedOrders,
+          status: dataProductList[0].status
         };
       } else {
         console.error('Продукт не найден по указанному артикулу:', offerId);
@@ -245,7 +260,7 @@ function searchCanceledOrders (barcode) {
   
       return null;
     }).filter(p => p !== null); // Фильтруем пустые значения, чтобы только верные продукты были включены
-  
+    console.log(updatedProductBarcodes)
     // Теперь каждый объект product содержит все свои orders внутри
     setProduct(updatedProductBarcodes); 
   }
@@ -314,6 +329,69 @@ function searchCanceledOrders (barcode) {
   
     setProduct(productBarcode);
   }
+
+  function generateOrderInfoMega(res) {
+    const productMap = new Map(allProducts.map(product => [product.article, product]));
+    const photoMap = new Map(photoProducts.map(photo => [photo.article, photo])); 
+    const productBarcode = res.map((item, i) => {
+      const product = productMap.get(item.article);
+      const photo = photoMap.get(item.article); 
+      const filteredOrders = productsOrdersBarcode.filter(p => p.article === item.article); 
+      
+  
+      const updatedProductsForOrders = filteredOrders.map(productOrder => {
+        const newOrders = productOrder.orders.map(orderObject => { 
+            if(orderObject.article.slice(0,2) == "AR"){
+             
+              // Перебираем orders, фильтруем те, которые есть в productsWarehouse
+              const updatedOrders = productsWarehouse.filter(orderWarehouse => orderWarehouse.article.slice(0,8) == orderObject.article.slice(0,8)) 
+              // Возвращаем новый объект заказа с обновленным массивом orders
+              return {
+                ...orderObject,
+                quantityWarehouse: updatedOrders[0].quantity
+              }
+            }else{
+              const updatedOrders = productsWarehouse.filter(orderWarehouse => orderWarehouse.article == orderObject.article)
+              
+              // Возвращаем новый объект заказа с обновленным массивом orders
+              return {
+                ...orderObject,
+                quantityWarehouse: updatedOrders[0].quantity
+              }
+            }
+            
+          });
+
+    return{
+      ...productOrder,
+      orders: newOrders
+    }
+})
+
+ 
+      const orders = updatedProductsForOrders.length ? 
+      updatedProductsForOrders.flatMap(({ orders }) => orders.map(order => ({
+          ...order,
+          quantity: order.quantity * item.quantity,
+          counter: 0,
+          success: false,
+          main_photo_link: photo ? photo.main_photo_link : null,
+          name_of_product: photo ? photo.name_of_product : null  }))
+      ) : [];
+          
+      return {
+        ...product,
+        postingNumber: res[0].orderId,
+        quantity: item.quantity,
+        date: res.date,
+        warehouse: 'Яндекс', 
+        photo: photo ? photo.main_photo_link : [],
+        orders: orders
+      };
+    });
+  
+    setProduct(productBarcode);
+  }
   
  
   function generateOrderInfoWB(dataProduct) {   
@@ -373,7 +451,8 @@ function searchCanceledOrders (barcode) {
       productBarcode.quantity = multiplier;
       productBarcode.date = 'Не указан'; 
       productBarcode.photo = photoProducts.find(item => item.article === dataProduct[0].article)?.main_photo_link || null;
-      productBarcode.orders = orders
+      productBarcode.orders = orders 
+      productBarcode.status = dataProduct[0].status
       setProduct([productBarcode]);
     } else {
       console.error('Продукт не найден по артикулу:', dataProduct[0].article);
